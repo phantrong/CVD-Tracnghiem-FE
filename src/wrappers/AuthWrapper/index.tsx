@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 // import Cookies from 'js-cookie';
 import PageHeader from 'components/PageHeader';
-import SideNav from 'components/SideNav';
 import { /*Redirect, */ Outlet } from 'react-router-dom';
 import styles from './styles.module.scss';
 // import { useQuery } from 'react-query';
@@ -15,7 +14,7 @@ export default function PageWrapper() {
   // if (!profile) return null;
   return (
     <div className={styles.pageWrapper}>
-      <SideNav />
+      {/* <SideNav /> */}
       <div className={styles.mainWrapper}>
         <PageHeader />
         <div className={styles.pageContent}>

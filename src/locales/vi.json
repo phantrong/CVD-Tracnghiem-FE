@@ -2,9 +2,22 @@
   "common": {
     "login": "Đăng nhập",
     "signUp": "Đăng ký",
-    "username": "Tài khoản",
+    "home": "Trang chủ",
+    "category": "Chủ đề",
+    "find": "Tìm kiếm"
+  },
+  "home": {
+    "mainAppName": "TRẮC NGHIỆM ONLINE",
+    "subAppName": " - Kiểm Tra Kiến Thức Hiệu Quả",
+    "appDes": "Hệ thống các câu hỏi trắc nghiệm các lĩnh vực giáo dục",
+    "findTest": "Tìm kiếm đề thi"
+  },
+  "modalLogin": {
+    "title": "Đăng nhập tài khoản",
+    "username": "Tên tài khoản",
     "password": "Mật khẩu",
-    "rememberMe": "Nhớ tài khoản"
+    "notHaveAccount": "Bạn Chưa có tài khoản?",
+    "forgotPassword": "Quên mật khẩu"
   },
   "validate": {
     "usernameRequired": "Vui lòng nhập tài khoản",

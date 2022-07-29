@@ -1,43 +1,24 @@
 import React from 'react';
-// import Cookies from 'js-cookie';
-import { Menu, Dropdown } from 'antd';
-// import { useQueryClient } from 'react-query';
-// import classNames from 'classnames';
+import Cookies from 'js-cookie';
+import { Menu, Dropdown, Button, Spin, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
-import avatarImg from 'assets/images/avatar.svg';
+import useProfile from 'hooks/useProfile';
 import styles from './styles.module.scss';
-// import useProfile from 'hooks/useProfile';
-// import useToggleSideNav from 'hooks/useToggleSideNav';
+import { TOKEN_CUSTOMER } from 'contants/constants';
+
 import logoHeader from 'assets/images/logo-header.svg';
+import avatarImg from 'assets/images/avatar.svg';
+import Login from 'pages/Login';
+import SignUp from 'pages/SignUp';
 
 export default function PageHeader() {
-  // const navigate = useNavigate();
-  // const queryClient = useQueryClient();
-  // const profile = useProfile();
-  // const collapsed = useToggleSideNav();
-
-  // const routes = [
-  //   {
-  //     key: '1',
-  //     text: 'ホーム',
-  //     url: '/',
-  //   },
-  //   {
-  //     key: '2',
-  //     text: 'イベント一覧',
-  //     url: '/',
-  //   },
-  //   {
-  //     key: '3',
-  //     text: '配信中のイベント',
-  //     url: '/',
-  //   },
-  //   {
-  //     key: '4',
-  //     text: 'マイページ',
-  //     url: '/',
-  //   },
-  // ];
+  const { t } = useTranslation();
+  const isAuthenticated: boolean = !!Cookies.get(TOKEN_CUSTOMER);
+  const { data: profile, isLoading: isLoadingProfile }: any = useProfile(isAuthenticated);
+  const [isModalLoginVisible, setIsModalLoginVisible] = useState<boolean>(false);
+  const [isModalSignUpVisible, setIsModalSignUpVisible] = useState<boolean>(false);
 
   // const handleLogout = () => {
   //   Cookies.remove('token');
@@ -61,26 +42,54 @@ export default function PageHeader() {
         <div className={styles.logoHeader}>
           <img src={logoHeader} alt="logo top" />
         </div>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} className={styles.menuContent}>
-          {/* {routes.map((route) => (
-            <Menu.Item key={route.key}>
-              <Link to={route.url}>{route.text}</Link>
-            </Menu.Item>
-          ))} */}
-        </Menu>
-        <div className={styles.searchBox}></div>
-        {/* <div className={styles.cartBox}>
-          <img src={cart} alt="cart" />
-        </div> */}
-        <div className={styles.menuItem}>
-          <Dropdown overlay={menu} trigger={['click']}>
-            <div className={styles.dropdownToggle}>
-              <img className={styles.icon} src={avatarImg} alt="avatar user" />
-              <span className={styles.userName}>Kanaye Naoko</span>
-            </div>
-          </Dropdown>
+        <div className={styles.redirectTab}>
+          <a href="/">{t('common.home')}</a>
+          <a href="/">{t('common.category')}</a>
         </div>
+        {!isAuthenticated && (
+          <div className={styles.authen}>
+            <Button type="primary" className={styles.btnLogin} onClick={() => setIsModalLoginVisible(true)}>
+              {t('common.login')}
+            </Button>
+            <Button type="primary" className={styles.btnSignUp} onClick={() => setIsModalSignUpVisible(true)}>
+              {t('common.signUp')}
+            </Button>
+          </div>
+        )}
+        {!!isAuthenticated && (
+          <div className={styles.menuItem}>
+            {!isLoadingProfile && (
+              <Dropdown overlay={menu} trigger={['click']}>
+                <div className={styles.dropdownToggle}>
+                  <img className={styles.icon} src={avatarImg} alt="avatar user" />
+                  <span className={styles.userName}>{profile?.name}</span>
+                </div>
+              </Dropdown>
+            )}
+            {isLoadingProfile && <Spin size="small" />}
+          </div>
+        )}
       </div>
+      <Modal
+        className={styles.modalLogin}
+        visible={isModalLoginVisible}
+        onCancel={() => setIsModalLoginVisible(false)}
+        closable={false}
+        centered={true}
+        footer={false}
+      >
+        <Login />
+      </Modal>
+      <Modal
+        className={styles.modalSignUp}
+        visible={isModalSignUpVisible}
+        onCancel={() => setIsModalSignUpVisible(false)}
+        closable={false}
+        centered={true}
+        footer={false}
+      >
+        <SignUp />
+      </Modal>
     </div>
   );
 }

@@ -4,8 +4,7 @@ import AuthWrapper from 'wrappers/AuthWrapper';
 
 const Login = lazy(() => import('pages/Login'));
 const SignUp = lazy(() => import('pages/SignUp'));
-const Tasks = lazy(() => import('pages/Tasks'));
-const SearchProduct = lazy(() => import('pages/SearchProduct'));
+const Home = lazy(() => import('pages/Home'));
 
 export default function AppWrapper() {
   return (
@@ -15,8 +14,7 @@ export default function AppWrapper() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/" element={<AuthWrapper />}>
           {/* Child route declaration */}
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="search-product" element={<SearchProduct />} />
+          <Route path="/" element={<Home />} />
         </Route>
       </Routes>
     </div>
