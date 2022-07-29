@@ -42,15 +42,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rimraf dist && rename build dist && rename dist/index.html app.html",
-    "server": "node server/index.js",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "tslint -c ./tslint.json src/**/*.{ts,tsx}",
     "tslint/fix": "tslint --fix -c ./tslint.json src/**/*.{ts,tsx}",
     "stylelint": "stylelint src/**/*.scss",
-    "stylelint/fix": "stylelint --fix src/**/*.scss",
-    "prepare": "husky install"
+    "stylelint/fix": "stylelint --fix src/**/*.scss"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -68,7 +66,6 @@
     ]
   },
   "devDependencies": {
-    "husky": "^7.0.1",
     "rename-cli": "^6.2.1",
     "rimraf": "^3.0.2",
     "stylelint": "^13.13.1",
