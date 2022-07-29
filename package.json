@@ -66,6 +66,7 @@
     ]
   },
   "devDependencies": {
+    "web-vitals": "^2.1.4",
     "rename-cli": "^6.2.1",
     "rimraf": "^3.0.2",
     "stylelint": "^13.13.1",
