@@ -26,6 +26,16 @@ export default function PageHeader() {
   //   navigate('/login');
   // };
 
+  const handleShowLogin = () => {
+    setIsModalSignUpVisible(false);
+    setIsModalLoginVisible(true);
+  };
+
+  const handleShowSignUp = () => {
+    setIsModalLoginVisible(false);
+    setIsModalSignUpVisible(true);
+  };
+
   const menu = (
     <Menu style={{ minWidth: 200 }}>
       {/* <Menu.Item key="1">Profile</Menu.Item>
@@ -44,7 +54,7 @@ export default function PageHeader() {
         </div>
         <div className={styles.redirectTab}>
           <a href="/">{t('common.home')}</a>
-          <a href="/">{t('common.category')}</a>
+          <a href="/category">{t('common.category')}</a>
         </div>
         {!isAuthenticated && (
           <div className={styles.authen}>
@@ -78,7 +88,7 @@ export default function PageHeader() {
         centered={true}
         footer={false}
       >
-        <Login />
+        <Login handleShowSignUp={handleShowSignUp} />
       </Modal>
       <Modal
         className={styles.modalSignUp}
@@ -88,7 +98,7 @@ export default function PageHeader() {
         centered={true}
         footer={false}
       >
-        <SignUp />
+        <SignUp handleShowLogin={handleShowLogin} />
       </Modal>
     </div>
   );

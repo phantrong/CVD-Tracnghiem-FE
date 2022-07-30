@@ -1,5 +1,4 @@
 import React from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import _ from 'lodash';
 import styles from './style.module.scss';
@@ -8,11 +7,14 @@ import { useTranslation } from 'react-i18next';
 import { login } from 'api/authentication';
 import { handleErrorMessage } from 'helper';
 
-export default function Login() {
-  const navigate = useNavigate();
+interface LoginProps {
+  handleShowSignUp: () => void;
+}
+
+export default function Login(props: LoginProps) {
+  const { handleShowSignUp } = props;
   const { t } = useTranslation();
 
-  const navigateToSignUp = () => navigate('/sign-up');
   const handleSubmit = async (payload: any) => {
     const params = _.pick(payload, ['username', 'password']);
     try {
@@ -24,55 +26,38 @@ export default function Login() {
       Cookies.set('refreshToken', refreshToken, {
         expires: undefined,
       });
-      navigate('/');
     } catch (error) {
       handleErrorMessage(error);
     }
   };
 
-  const isAuthenticated = !!Cookies.get('token');
-  if (isAuthenticated) return <Navigate to="/" />;
-
   return (
-    <Form onFinish={handleSubmit} className={styles.loginForm}>
+    <Form onFinish={handleSubmit} hideRequiredMark className={styles.loginForm}>
       <Row justify="center">
         <h2>{t('modalLogin.title')}</h2>
       </Row>
-      <Form.Item
-        label={t('modalLogin.username')}
-        name="username"
-        rules={[
-          {
-            required: true,
-            message: t('validate.usernameRequired'),
-          },
-        ]}
-        labelAlign="left"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-      >
-        <Input />
+      <Form.Item label={t('modalLogin.username')} name="username" className={styles.form} labelCol={{ span: 24 }}>
+        <Input placeholder={t('modalLogin.username')} className={styles.input} />
       </Form.Item>
-      <Form.Item
-        label={t('modalLogin.password')}
-        name="password"
-        rules={[{ required: true, message: t('validate.passwordRequired') }]}
-        labelAlign="left"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-      >
-        <Input.Password />
+      <Form.Item label={t('modalLogin.password')} name="password" className={styles.form} labelCol={{ span: 24 }}>
+        <Input.Password placeholder={t('modalLogin.password')} className={styles.input} />
       </Form.Item>
-      <Form.Item labelCol={{ span: 24 }}>
-        <Button block type="primary" htmlType="submit">
+      <Form.Item labelCol={{ span: 24 }} className={styles.form}>
+        <Button block type="primary" htmlType="submit" className={styles.btnSubmit}>
           {t('common.login').toUpperCase()}
         </Button>
       </Form.Item>
-      <Form.Item labelCol={{ span: 24 }}>
-        <Button block type="dashed" htmlType="button" onClick={navigateToSignUp}>
-          {t('common.signUp').toUpperCase()}
-        </Button>
-      </Form.Item>
+      <Row className={styles.cantLogin}>
+        <div className={styles.notHaveAccount}>
+          {t('modalLogin.notHaveAccount')}
+          <span className={styles.showPopup} onClick={handleShowSignUp}>
+            {t('common.signUp')}
+          </span>
+        </div>
+        <div className={styles.forgotPassword}>
+          <span className={styles.showPopup}>{t('modalLogin.forgotPassword')}</span>
+        </div>
+      </Row>
     </Form>
   );
 }
