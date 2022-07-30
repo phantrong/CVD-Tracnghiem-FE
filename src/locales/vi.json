@@ -4,7 +4,11 @@
     "signUp": "Đăng ký",
     "home": "Trang chủ",
     "category": "Chủ đề",
-    "find": "Tìm kiếm"
+    "find": "Tìm kiếm",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "addNew": "Thêm mới",
+    "noData" : "Không có dữ liệu"
   },
   "home": {
     "mainAppName": "TRẮC NGHIỆM ONLINE",
@@ -27,6 +31,21 @@
     "countQuestion": "{{count}} câu hỏi",
     "countExam": "{{count}} lượt thi",
     "examNow": "Thi ngay"
+  },
+  "question": {
+    "question": "Câu hỏi",
+    "listQuestion": "Danh sách câu hỏi",
+    "status": "Trạng thái",
+    "category": "Chủ đề",
+    "showCount": "Hiển thị {{from}}-{{to}} của {{total}}",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "id": "STT",
+    "code": "Mã câu hỏi",
+    "content": "Nội dung câu hỏi",
+    "group": "Nhóm câu hỏi",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật"
   },
   "modalLogin": {
     "title": "Đăng nhập tài khoản",

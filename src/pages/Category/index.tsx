@@ -5,13 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import countTest from 'assets/images/countTest.svg';
 
-interface CategoryInterface {
-  id: number;
-  name: string;
-  countTest: number;
-  image: string;
-}
-
 export default function Category() {
   const { t } = useTranslation();
   const gutter: number = 30;

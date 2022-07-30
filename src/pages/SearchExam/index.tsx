@@ -16,23 +16,6 @@ const SORT_BY = {
   OLD: 'old',
 };
 
-interface ExamInterface {
-  id: number;
-  name: string;
-  countQuestion: number;
-  countExam: number;
-  subjects: {
-    id: number;
-    name: string;
-  }[];
-  image: string;
-}
-
-interface CategoryInterface {
-  id: number;
-  name: string;
-}
-
 export default function SearchExam() {
   const { t } = useTranslation();
   const { state }: any = useLocation();
@@ -44,7 +27,7 @@ export default function SearchExam() {
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
   const isLoadingListCategory = false;
-  const listCategory = [
+  const listCategory: CategoryInterface[] = [
     {
       id: 1,
       name: 'Tin học',

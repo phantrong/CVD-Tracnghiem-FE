@@ -5,6 +5,7 @@ import AuthWrapper from 'wrappers/AuthWrapper';
 const Home = lazy(() => import('pages/Home'));
 const Category = lazy(() => import('pages/Category'));
 const SearchExam = lazy(() => import('pages/SearchExam'));
+const Question = lazy(() => import('pages/Question'));
 
 export default function AppWrapper() {
   return (
@@ -15,6 +16,7 @@ export default function AppWrapper() {
           <Route path="/" element={<Home />} />
           <Route path="/category" element={<Category />} />
           <Route path="/search-exam" element={<SearchExam />} />
+          <Route path="/question" element={<Question />} />
         </Route>
       </Routes>
     </div>
