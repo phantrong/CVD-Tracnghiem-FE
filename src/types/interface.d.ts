@@ -34,6 +34,21 @@ declare interface CategoryInterface {
   image?: string;
 }
 
+declare interface TypeQuestionInterface {
+  id: number;
+  name: string;
+}
+
+declare interface GradeInterface {
+  id: number;
+  name: string;
+}
+
+declare interface GroupQuestionInterface {
+  id: number;
+  name: string;
+}
+
 declare interface ExamInterface {
   id: number;
   name: string;
@@ -52,4 +67,15 @@ declare interface IColumnTable {
   key: string;
   className: string;
   render?: any;
+}
+
+declare interface InitialValueQuestionFormInterface {
+  type?: number;
+  category?: number;
+  grade?: number;
+  group?: number;
+  status?: number;
+  content?: string;
+  checkOptions: any[];
+  options: any[];
 }

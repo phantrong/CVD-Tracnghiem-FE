@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Button, Col, Input, Pagination, Popover, Row, Select, Spin, Table } from 'antd';
+import { Button, Col, Input, Modal, Pagination, Popover, Row, Select, Spin, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,8 @@ import iconSearch from 'assets/images/SearchFilled.svg';
 import iconAdd from 'assets/images/add-white.svg';
 import iconActive from 'assets/images/active.svg';
 import iconInactive from 'assets/images/inactive.svg';
+import CommonQuestionForm from 'components/CommonQuestionForm';
+import { QUESTION_STATUS } from 'contants/constants';
 
 const { Option } = Select;
 
@@ -25,6 +27,7 @@ export default function Question() {
   const { t } = useTranslation();
 
   const [filter, setFilter] = useState<IFilterListQuestion>(defaultFilter);
+  const [isModalAddQuestionVisible, setIsModalAddQuestionVisible] = useState<boolean>(false);
 
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
@@ -156,8 +159,13 @@ export default function Question() {
       updatedAt: dayjs(question.updatedAt).format('YYYY/MM/DD'),
       status: (
         <div className={styles.divStatus}>
-          <img height={24} width={24} src={question.status === 1 ? iconActive : iconInactive} alt="More" />{' '}
-          {question.status === 1 ? t('question.active') : t('question.inactive')}
+          <img
+            height={24}
+            width={24}
+            src={question.status === QUESTION_STATUS.ACTIVE ? iconActive : iconInactive}
+            alt="More"
+          />{' '}
+          {question.status === QUESTION_STATUS.ACTIVE ? t('question.active') : t('question.inactive')}
         </div>
       ),
       handle: (
@@ -288,10 +296,18 @@ export default function Question() {
               bordered={false}
               onChange={handleChangeStatus}
             >
-              <Option value={1} selected={filter.status === 1} key={'optionStatus' + 1}>
+              <Option
+                value={QUESTION_STATUS.ACTIVE}
+                selected={filter.status === QUESTION_STATUS.ACTIVE}
+                key={'optionStatus' + QUESTION_STATUS.ACTIVE}
+              >
                 {t('question.active')}
               </Option>
-              <Option value={0} selected={filter.status === 0} key={'optionStatus' + 0}>
+              <Option
+                value={QUESTION_STATUS.INACTIVE}
+                selected={filter.status === QUESTION_STATUS.INACTIVE}
+                key={'optionStatus' + QUESTION_STATUS.INACTIVE}
+              >
                 {t('question.inactive')}
               </Option>
             </Select>
@@ -314,7 +330,13 @@ export default function Question() {
             />
           </Col>
           <Col xs={24} sm={24} md={8} lg={8} xl={8} className={styles.colBtn}>
-            <Button block type="primary" htmlType="submit" className={styles.btnAdd}>
+            <Button
+              block
+              type="primary"
+              htmlType="button"
+              className={styles.btnAdd}
+              onClick={() => setIsModalAddQuestionVisible(true)}
+            >
               {t('common.addNew').toUpperCase()} <img height={16} width={16} src={iconAdd} alt="Add" />
             </Button>
           </Col>
@@ -349,6 +371,16 @@ export default function Question() {
           </Col>
         </Col>
       )}
+      <Modal
+        className={styles.modalQuestion}
+        visible={isModalAddQuestionVisible}
+        onCancel={() => setIsModalAddQuestionVisible(false)}
+        closable={true}
+        centered={true}
+        footer={false}
+      >
+        <CommonQuestionForm />
+      </Modal>
     </div>
   );
 }

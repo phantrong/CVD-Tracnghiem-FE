@@ -8,7 +8,8 @@
     "edit": "Sửa",
     "delete": "Xóa",
     "addNew": "Thêm mới",
-    "noData" : "Không có dữ liệu"
+    "noData" : "Không có dữ liệu",
+    "save": "Lưu"
   },
   "home": {
     "mainAppName": "TRẮC NGHIỆM ONLINE",
@@ -46,6 +47,20 @@
     "group": "Nhóm câu hỏi",
     "createdAt": "Ngày tạo",
     "updatedAt": "Ngày cập nhật"
+  },
+  "questionForm": {
+    "addQuestion": "Thêm mới câu hỏi",
+    "typeQuestion": "Loại câu hỏi",
+    "groupQuestion": "Nhóm câu hỏi",
+    "grade": "Lớp",
+    "category": "Chủ đề",
+    "content": "Nội dung câu hỏi",
+    "hereQuestionContent": "Đây là nội dung câu hỏi",
+    "option": "Phương án {{number}}",
+    "addOption": "Thêm phương án",
+    "typePickOne": "Chọn phương án đúng nhất",
+    "typeMultiPick": "Chọn nhiều phương án",
+    "typeFill": "Điền phương án tự luận"
   },
   "modalLogin": {
     "title": "Đăng nhập tài khoản",
