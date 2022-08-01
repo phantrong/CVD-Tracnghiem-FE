@@ -219,99 +219,62 @@ export default function CommonQuestionForm() {
             className={styles.input}
           />
         </Form.Item>
-        <Row className={styles.rowFormList}>
-          {/* <Row className={styles.formListCheck} style={{ width: '10%' }}>
-            <Form.List
-              name="checkOptions"
-              rules={[
-                {
-                  validator: async (_, names) => {
-                    if (!names || names.length < 2) {
-                      return Promise.reject(new Error('Phải có ít nhất 2 phương án.'));
-                    }
-                  },
+        <Row className={styles.formListOption}>
+          <Form.List
+            name="options"
+            rules={[
+              {
+                validator: async (_, names) => {
+                  if (!names || names.length < 2) {
+                    return Promise.reject(new Error('Phải có ít nhất 2 phương án.'));
+                  }
                 },
-              ]}
-            >
-              {(fields) => (
-                <>
-                  {fields.map((field, index) => (
-                    <Form.Item {...formItemLayout} {...field} key={field.key} className={styles.form}>
-                      <Radio.Group name="checkOptions" value={0}>
-                        <Radio value={index} />
-                      </Radio.Group>
-                    </Form.Item>
-                  ))}
-                </>
-              )}
-            </Form.List>
-          </Row> */}
-          <Row className={styles.formListOption} style={{ width: '90%' }}>
-            <Form.List
-              name="options"
-              rules={[
-                {
-                  validator: async (_, names) => {
-                    if (!names || names.length < 2) {
-                      return Promise.reject(new Error('Phải có ít nhất 2 phương án.'));
-                    }
-                  },
-                },
-              ]}
-            >
-              {(fields, { add, remove }, { errors }) => (
-                <>
-                  {fields.map((field, index, ...resetField) => (
-                    <div key={field.key}>
-                      <Form.Item
-                        name={[field.name, 'checkOption']}
-                        {...resetField}
-                        fieldKey={[field.key, 'checkOption']}
-                      >
-                        <div className="form-check">
-                          <Input
-                            // onChnage={change}
-                            className="form-check-input"
-                            value={field.key}
-                            type="radio"
-                            name="checkOption"
-                            id={`${field.key}`}
-                          />
-                        </div>
-                      </Form.Item>
-                      <Form.Item {...formItemLayout} className={styles.form}>
-                        <Form.Item {...field} name={[field.name, 'option']} {...resetField} className={styles.form}>
-                          <Input
-                            placeholder={t('questionForm.option', { number: index + 1 })}
-                            className={styles.input}
-                          />
-                        </Form.Item>
-                        {fields.length > 1 ? (
-                          <img
-                            height={24}
-                            width={24}
-                            src={IconDelete}
-                            alt="delete"
-                            onClick={() => remove(field.name)}
-                          />
-                        ) : null}
-                      </Form.Item>
-                    </div>
-                  ))}
-                  <Form.Item>
-                    <Button
-                      onClick={() => add()}
-                      className={styles.btnAddOption}
-                      icon={<img height={16} width={16} src={IconAdd} alt="add" />}
+              },
+            ]}
+          >
+            {(fields, { add, remove }, { errors }) => (
+              <>
+                {fields.map((field, index, ...resetField) => (
+                  <div key={field.key} className={styles.formOption}>
+                    <Form.Item
+                      name={[field.name, 'checkOption']}
+                      className={styles.formCheck}
+                      style={{ width: '10%' }}
+                      {...resetField}
+                      fieldKey={[field.key, 'checkOption']}
                     >
-                      {t('questionForm.addOption')}
-                    </Button>
-                    <Form.ErrorList errors={errors} />
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-          </Row>
+                      <Input
+                        onChange={(e) => console.log(e.currentTarget.value)}
+                        className={styles.radioBtn}
+                        value={index}
+                        type="radio"
+                        name="checkOption"
+                        id={`${field.key}`}
+                      />
+                    </Form.Item>
+                    <Form.Item {...formItemLayout} className={styles.formInput} style={{ width: '90%' }}>
+                      <Form.Item {...field} name={[field.name, 'option']} {...resetField} className={styles.form}>
+                        <Input placeholder={t('questionForm.option', { number: index + 1 })} className={styles.input} />
+                      </Form.Item>
+                      {fields.length > 1 ? (
+                        <img height={24} width={24} src={IconDelete} alt="delete" onClick={() => remove(field.name)} />
+                      ) : null}
+                    </Form.Item>
+                  </div>
+                ))}
+                <Form.Item>
+                  <Button
+                    onClick={() => add()}
+                    className={styles.btnAddOption}
+                    icon={<img height={16} width={16} src={IconAdd} alt="add" />}
+                  >
+                    {t('questionForm.addOption')}
+                  </Button>
+                  <Form.ErrorList errors={errors} />
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
         </Row>
         <Form.Item name="status" label={t('question.status')} className={styles.form} labelCol={{ span: 24 }}>
           <Select placeholder={t('question.status')} className={styles.select} bordered={false}>

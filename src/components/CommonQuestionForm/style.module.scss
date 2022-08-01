@@ -40,52 +40,46 @@
             justify-content: center;
             height: 45px;
         }
-        .rowFormList {
-            display: flex;
-            .formListCheck,
-            .formListOption {
+        .formListOption {
+            flex-direction: column;
+            .formOption {
                 display: flex;
-                flex-direction: column;
-            }
-            .formListCheck {
-                .form {
-                    height: 45px;
+                align-items: center;
+                .formCheck {
                     display: flex;
                     align-items: center;
-                    text-align: center;
-                    justify-content: center;
+                     :global(.ant-form-item-control-input-content) {
+                        display: flex;
+                        align-items: center;
+                    }
                     margin-bottom: 48px;
-                }
-            }
-            .formListOption {
-                 :global(.ant-form-item-control-input-content) {
-                    display: flex;
-                }
-                .form {
-                    display: flex;
-                    flex-direction: column;
-                }
-                .formOption {
-                    display: flex;
-                    align-items: center;
-                    img {
-                        margin-top: 12px;
-                        margin-left: 10px;
+                    input {
+                        height: 20px;
+                        width: 20px;
                     }
                 }
-                .btnAddOption {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 12px 8px;
-                    gap: 4px;
-                    box-shadow: inset 0px -1px 0px #E1E3E5;
-                    border: none;
-                    font-style: italic;
-                    font-weight: 400;
-                    font-size: 14px;
+                .formInput {
+                     :global(.ant-form-item-control-input-content) {
+                        display: flex;
+                    }
                 }
+                img {
+                    margin-top: 12px;
+                    margin-left: 10px;
+                }
+            }
+            .btnAddOption {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                padding: 12px 8px;
+                gap: 4px;
+                box-shadow: inset 0px -1px 0px #E1E3E5;
+                border: none;
+                font-style: italic;
+                font-weight: 400;
+                font-size: 14px;
             }
         }
         .btnSubmit {
