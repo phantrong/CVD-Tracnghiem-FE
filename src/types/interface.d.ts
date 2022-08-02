@@ -90,7 +90,6 @@ declare interface SignUpParamsInterface {
   username: string;
   displayName: string;
   password: string;
-  confirmPassword: string;
 }
 
 declare interface ChangePasswordParamsInterface {

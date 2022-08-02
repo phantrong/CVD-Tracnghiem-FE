@@ -97,7 +97,7 @@
   },
   "modalSignUp": {
     "title": "Đăng ký tài khoản",
-    "fullName": "Họ và tên",
+    "displayName": "Họ và tên",
     "username": "Tên tài khoản",
     "password": "Mật khẩu",
     "confirmPassword": "Nhập lại mật khẩu",

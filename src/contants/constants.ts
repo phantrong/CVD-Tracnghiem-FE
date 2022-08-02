@@ -1,6 +1,10 @@
 export const TOKEN_CUSTOMER = 'token_customer';
 
+export const ERROR_RESPONSE = 400;
+
 export const MAX_LENGTH_INPUT = 3000;
+export const MIN_LENGTH_PASSWORD = 8;
+export const MAX_LENGTH_PASSWORD = 100;
 
 export const QUESTION_STATUS = {
   ACTIVE: 1,
