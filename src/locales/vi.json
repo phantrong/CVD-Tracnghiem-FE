@@ -28,6 +28,10 @@
     "title": "Các chủ đề trắc nhiệm",
     "test": "bài thi"
   },
+  "page404": {
+    "title": "URL không tồn tại.",
+    "backToHome": "Trở về trang chủ"
+  },
   "searchExam": {
     "filterSearch": "Bộ lọc tìm kiếm",
     "filterSearchPlaceholder": "Tìm kiếm bằng mã hoặc tên đề thi",
@@ -40,9 +44,24 @@
     "countExam": "{{count}} lượt thi",
     "examNow": "Thi ngay"
   },
-  "question": {
+  "myQuestion": {
     "question": "Câu hỏi",
     "listQuestion": "Danh sách câu hỏi",
+    "status": "Trạng thái",
+    "category": "Chủ đề",
+    "showCount": "Hiển thị {{from}}-{{to}} của {{total}}",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "id": "STT",
+    "code": "Mã câu hỏi",
+    "content": "Nội dung câu hỏi",
+    "group": "Nhóm câu hỏi",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật"
+  },
+  "myListExam": {
+    "exam": "Đề thi",
+    "listExam": "Danh sách đề thi",
     "status": "Trạng thái",
     "category": "Chủ đề",
     "showCount": "Hiển thị {{from}}-{{to}} của {{total}}",

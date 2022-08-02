@@ -12,6 +12,7 @@ import iconActive from 'assets/images/active.svg';
 import iconInactive from 'assets/images/inactive.svg';
 import CommonQuestionForm from 'components/CommonQuestionForm';
 import { QUESTION_STATUS } from 'contants/constants';
+import SideNav from 'components/SideNav';
 
 const { Option } = Select;
 
@@ -23,7 +24,7 @@ const defaultFilter: IFilterListQuestion = {
   per_page: 10,
 };
 
-export default function Question() {
+export default function MyListExam() {
   const { t } = useTranslation();
 
   const [filter, setFilter] = useState<IFilterListQuestion>(defaultFilter);
@@ -165,7 +166,7 @@ export default function Question() {
             src={question.status === QUESTION_STATUS.ACTIVE ? iconActive : iconInactive}
             alt="More"
           />{' '}
-          {question.status === QUESTION_STATUS.ACTIVE ? t('question.active') : t('question.inactive')}
+          {question.status === QUESTION_STATUS.ACTIVE ? t('myListExam.active') : t('myListExam.inactive')}
         </div>
       ),
       handle: (
@@ -185,43 +186,43 @@ export default function Question() {
 
   const columns: IColumnTable[] = [
     {
-      title: <strong>{t('question.id')}</strong>,
+      title: <strong>{t('myListExam.id')}</strong>,
       dataIndex: 'id',
       key: 'id',
       className: styles.indexColumn,
     },
     {
-      title: <strong>{t('question.code')}</strong>,
+      title: <strong>{t('myListExam.code')}</strong>,
       dataIndex: 'code',
       key: 'code',
       className: styles.codeColumn,
     },
     {
-      title: <strong>{t('question.content')}</strong>,
+      title: <strong>{t('myListExam.content')}</strong>,
       dataIndex: 'content',
       key: 'content',
       className: styles.contentColumn,
     },
     {
-      title: <strong>{t('question.group')}</strong>,
+      title: <strong>{t('myListExam.group')}</strong>,
       dataIndex: 'group',
       key: 'group',
       className: styles.groupColumn,
     },
     {
-      title: <strong>{t('question.createdAt')}</strong>,
+      title: <strong>{t('myListExam.createdAt')}</strong>,
       dataIndex: 'createdAt',
       key: 'createdAt',
       className: styles.createdAtColumn,
     },
     {
-      title: <strong>{t('question.updatedAt')}</strong>,
+      title: <strong>{t('myListExam.updatedAt')}</strong>,
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       className: styles.updatedAtColumn,
     },
     {
-      title: <strong>{t('question.status')}</strong>,
+      title: <strong>{t('myListExam.status')}</strong>,
       dataIndex: 'status',
       key: 'status',
       className: styles.statusColumn,
@@ -282,16 +283,17 @@ export default function Question() {
   }, [filter.category, listCategory]);
 
   return (
-    <div className={styles.questionPage}>
+    <div className={styles.myListExam}>
+      <SideNav />
       <Row justify="space-between" align="bottom" className={styles.title}>
         <Col span={24}>
-          <h2>{t('question.listQuestion')}</h2>
+          <h2>{t('myListExam.listExam')}</h2>
         </Col>
         <Col span={24} className={styles.colFilterAdd}>
           <Col xs={24} sm={24} md={16} lg={16} xl={16} className={styles.colFilter}>
             <Select
               value={filter.status}
-              placeholder={t('question.status')}
+              placeholder={t('myListExam.status')}
               className={styles.select}
               bordered={false}
               onChange={handleChangeStatus}
@@ -301,14 +303,14 @@ export default function Question() {
                 selected={filter.status === QUESTION_STATUS.ACTIVE}
                 key={'optionStatus' + QUESTION_STATUS.ACTIVE}
               >
-                {t('question.active')}
+                {t('myListExam.active')}
               </Option>
               <Option
                 value={QUESTION_STATUS.INACTIVE}
                 selected={filter.status === QUESTION_STATUS.INACTIVE}
                 key={'optionStatus' + QUESTION_STATUS.INACTIVE}
               >
-                {t('question.inactive')}
+                {t('myListExam.inactive')}
               </Option>
             </Select>
             <Select
@@ -317,7 +319,7 @@ export default function Question() {
               bordered={false}
               onChange={handleChangeCategory}
               loading={isLoadingListCategory}
-              placeholder={t('question.category')}
+              placeholder={t('myListExam.category')}
             >
               {optionSelectCategory}
             </Select>
@@ -359,7 +361,7 @@ export default function Question() {
         <Col span={24} className={styles.colPagination}>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className={styles.textPagination}>
             <strong>
-              {t('question.showCount', {
+              {t('myListExam.showCount', {
                 total: 100,
                 from: 1,
                 to: 10,
