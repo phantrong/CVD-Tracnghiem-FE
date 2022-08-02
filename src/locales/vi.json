@@ -2,13 +2,20 @@
   "common": {
     "login": "Đăng nhập",
     "signUp": "Đăng ký",
+    "questionManagement": "Quản lý câu hỏi",
+    "examManagement": "Quản lý đề thi",
+    "profile": "Trang cá nhân",
+    "logout": "Đăng xuất",
+    "changePassword": "Đổi mật khẩu",
+    "forgotPassword": "Quên mật khẩu",
+    "check": "Kiểm tra",
     "home": "Trang chủ",
     "category": "Chủ đề",
     "find": "Tìm kiếm",
     "edit": "Sửa",
     "delete": "Xóa",
     "addNew": "Thêm mới",
-    "noData" : "Không có dữ liệu",
+    "noData": "Không có dữ liệu",
     "save": "Lưu"
   },
   "home": {
@@ -76,7 +83,24 @@
     "password": "Mật khẩu",
     "confirmPassword": "Nhập lại mật khẩu",
     "hadAccount": "Bạn đã có tài khoản?",
-    "forgotPassword": "Quên mật khẩu"
+    "forgotPassword": "Quên mật khẩu",
+    "email": "Email",
+    "validate": {
+      "confirmPasswordInvalid": "Nhập lại mật khẩu không đúng."
+    }
+  },
+  "modalChangePassword": {
+    "title": "Đổi mật khẩu mới",
+    "oldPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Nhập lại mật khẩu mới",
+    "validate": {
+      "confirmPasswordInvalid": "Nhập lại mật khẩu không đúng."
+    }
+  },
+  "modalForgotPassword": {
+    "title": "Quên mật khẩu",
+    "email": "Email hiện tại"
   },
   "validate": {
     "usernameRequired": "Vui lòng nhập tài khoản",

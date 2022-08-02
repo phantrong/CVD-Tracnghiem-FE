@@ -84,3 +84,21 @@ declare interface InitialValueQuestionFormInterface {
   checkOptions: any[];
   options: any[];
 }
+
+declare interface SignUpParamsInterface {
+  email: string;
+  username: string;
+  displayName: string;
+  password: string;
+  confirmPassword: string;
+}
+
+declare interface ChangePasswordParamsInterface {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+declare interface ForgotPasswordParamsInterface {
+  email: string;
+}
