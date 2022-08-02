@@ -12,3 +12,8 @@ export const QUESTION_TYPE = {
   MULTI_PICK: 2,
   FILL_TEXTBOX: 3,
 };
+
+export const QUESTION_TYPE_FILL_TEXTBOX = {
+  EXACTLY: 1,
+  CONTAINS: 2,
+};

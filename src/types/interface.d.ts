@@ -39,6 +39,11 @@ declare interface TypeQuestionInterface {
   name: string;
 }
 
+declare interface TypeFillTextBoxInterface {
+  id: number;
+  name: string;
+}
+
 declare interface GradeInterface {
   id: number;
   name: string;

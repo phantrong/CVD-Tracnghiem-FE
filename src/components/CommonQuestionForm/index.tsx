@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
-import { Form, Row, Select, FormInstance, Input, Button, Radio } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Form, Row, Select, FormInstance, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import styles from './style.module.scss';
-import { MAX_LENGTH_INPUT, QUESTION_STATUS, QUESTION_TYPE } from 'contants/constants';
+import { MAX_LENGTH_INPUT, QUESTION_STATUS, QUESTION_TYPE, QUESTION_TYPE_FILL_TEXTBOX } from 'contants/constants';
 import TextArea from 'antd/lib/input/TextArea';
 
 import IconAdd from '../../assets/images/icon-add.svg';
@@ -40,6 +40,19 @@ interface CommonQuestionFormProps {
 export default function CommonQuestionForm() {
   const { t } = useTranslation();
   const [form]: FormInstance<any>[] = Form.useForm();
+  const [checkedOptions, setCheckOptions] = useState<number[]>([]);
+  const [typeOption, setTypeOption] = useState<number>(QUESTION_TYPE.PICK_ONE);
+
+  const listFillTextBox: TypeFillTextBoxInterface[] = [
+    {
+      id: QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
+      name: 'Chính xác',
+    },
+    {
+      id: QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
+      name: 'Chứa đựng',
+    },
+  ];
 
   const isLoadingListType = false;
   const listType: TypeQuestionInterface[] = [
@@ -105,8 +118,23 @@ export default function CommonQuestionForm() {
     },
   ];
 
+  const handleChangeTypeQuestion = (value: number) => {
+    setTypeOption(value);
+  };
+
+  const handleChangeCheckOptions = useCallback(
+    (index: number) => {
+      if (typeOption === QUESTION_TYPE.PICK_ONE) {
+        setCheckOptions([index]);
+      } else if (typeOption === QUESTION_TYPE.MULTI_PICK) {
+        setCheckOptions([...checkedOptions, index]);
+      }
+    },
+    [typeOption, checkedOptions]
+  );
+
   const handleSubmitAddQuestion = () => {
-    console.log(form.getFieldsValue());
+    console.log(form.getFieldsValue(), checkedOptions);
   };
 
   const optionSelectType = useMemo(() => {
@@ -133,6 +161,14 @@ export default function CommonQuestionForm() {
     ));
   }, [listGrade]);
 
+  const optionSelectTypeFillText = useMemo(() => {
+    return listFillTextBox.map((type: TypeFillTextBoxInterface) => (
+      <Option key={'fill' + type.id} value={type.id}>
+        {type.name}
+      </Option>
+    ));
+  }, [listFillTextBox]);
+
   const optionSelectGroup = useMemo(() => {
     return listGroup.map((group: GroupQuestionInterface) => (
       <Option key={'group' + group.id} value={group.id}>
@@ -140,10 +176,6 @@ export default function CommonQuestionForm() {
       </Option>
     ));
   }, [listGroup]);
-
-  useEffect(() => {
-    console.log(form.getFieldsValue());
-  }, [form]);
 
   return (
     <Row justify="center" className={styles.mainForm}>
@@ -164,6 +196,7 @@ export default function CommonQuestionForm() {
               bordered={false}
               loading={isLoadingListType}
               placeholder={t('questionForm.typeQuestion')}
+              onChange={handleChangeTypeQuestion}
             >
               {optionSelectType}
             </Select>
@@ -236,23 +269,64 @@ export default function CommonQuestionForm() {
               <>
                 {fields.map((field, index, ...resetField) => (
                   <div key={field.key} className={styles.formOption}>
+                    {typeOption === QUESTION_TYPE.PICK_ONE && (
+                      <Form.Item
+                        name={[field.name, 'checkOption']}
+                        className={styles.formCheck}
+                        style={{ width: '10%' }}
+                        {...resetField}
+                        fieldKey={[field.key, 'checkOption']}
+                      >
+                        <Input
+                          onChange={() => handleChangeCheckOptions(index)}
+                          className={styles.radioBtn}
+                          value={index}
+                          type="radio"
+                          name="checkOption"
+                          id={`${field.key}`}
+                        />
+                      </Form.Item>
+                    )}
+                    {typeOption === QUESTION_TYPE.MULTI_PICK && (
+                      <Form.Item
+                        name={[field.name, 'checkOption']}
+                        className={styles.formCheck}
+                        style={{ width: '10%' }}
+                        {...resetField}
+                        fieldKey={[field.key, 'checkOption']}
+                      >
+                        <Input
+                          onChange={() => handleChangeCheckOptions(index)}
+                          className={styles.radioBtn}
+                          value={index}
+                          type="checkbox"
+                          name="checkOption"
+                          id={`${field.key}`}
+                        />
+                      </Form.Item>
+                    )}
+                    {typeOption === QUESTION_TYPE.FILL_TEXTBOX && (
+                      <Form.Item
+                        name={[field.name, 'checkOption']}
+                        className={styles.formCheck}
+                        style={{ width: '30%', marginRight: '10px' }}
+                        {...resetField}
+                        fieldKey={[field.key, 'checkOption']}
+                      >
+                        <Select
+                          className={styles.select}
+                          bordered={false}
+                          defaultValue={QUESTION_TYPE_FILL_TEXTBOX.EXACTLY}
+                        >
+                          {optionSelectTypeFillText}
+                        </Select>
+                      </Form.Item>
+                    )}
                     <Form.Item
-                      name={[field.name, 'checkOption']}
-                      className={styles.formCheck}
-                      style={{ width: '10%' }}
-                      {...resetField}
-                      fieldKey={[field.key, 'checkOption']}
+                      {...formItemLayout}
+                      className={styles.formInput}
+                      style={{ width: `${typeOption === QUESTION_TYPE.FILL_TEXTBOX ? '70%' : '90%'}` }}
                     >
-                      <Input
-                        onChange={(e) => console.log(e.currentTarget.value)}
-                        className={styles.radioBtn}
-                        value={index}
-                        type="radio"
-                        name="checkOption"
-                        id={`${field.key}`}
-                      />
-                    </Form.Item>
-                    <Form.Item {...formItemLayout} className={styles.formInput} style={{ width: '90%' }}>
                       <Form.Item {...field} name={[field.name, 'option']} {...resetField} className={styles.form}>
                         <Input placeholder={t('questionForm.option', { number: index + 1 })} className={styles.input} />
                       </Form.Item>
