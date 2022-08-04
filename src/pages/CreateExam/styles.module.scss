@@ -1,0 +1,44 @@
+.createExam {
+  position: relative;
+  margin-left: 84px;
+  .title {
+    padding: 10px 20px 0px 20px;
+    display: flex;
+    align-items: flex-start;
+    h2 {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 32px;
+    }
+  }
+  .select {
+    border: 1px solid #d6d6d6;
+    box-sizing: border-box;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    background-color: white;
+  }
+  .input {
+    border: 1px solid #d6d6d6;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding: 12px 10px;
+    height: 45px;
+    background-color: white;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .createExam {
+    margin: 0;
+    .title {
+      padding: 10px 15px 0px 15px;
+      h2 {
+        margin-bottom: 24px;
+      }
+    }
+  }
+}

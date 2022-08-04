@@ -68,11 +68,14 @@
     "active": "Hoạt động",
     "inactive": "Không hoạt động",
     "id": "STT",
-    "code": "Mã câu hỏi",
-    "content": "Nội dung câu hỏi",
-    "group": "Nhóm câu hỏi",
+    "code": "Mã đề thi",
+    "content": "Tên đề thi",
+    "group": "Nhóm đề thi",
     "createdAt": "Ngày tạo",
     "updatedAt": "Ngày cập nhật"
+  },
+  "createExam": {
+    "title": "Tạo đề thi mới"
   },
   "questionForm": {
     "addQuestion": "Thêm mới câu hỏi",

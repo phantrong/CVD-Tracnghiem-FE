@@ -8,6 +8,7 @@ import TextArea from 'antd/lib/input/TextArea';
 
 import IconAdd from '../../assets/images/icon-add.svg';
 import IconDelete from '../../assets/images/icon-delete.svg';
+import iconSearch from 'assets/images/SearchFilled.svg';
 
 const { Option } = Select;
 
@@ -350,13 +351,13 @@ export default function CommonQuestionForm() {
             )}
           </Form.List>
         </Row>
-        <Form.Item name="status" label={t('question.status')} className={styles.form} labelCol={{ span: 24 }}>
-          <Select placeholder={t('question.status')} className={styles.select} bordered={false}>
+        <Form.Item name="status" label={t('myQuestion.status')} className={styles.form} labelCol={{ span: 24 }}>
+          <Select placeholder={t('myQuestion.status')} className={styles.select} bordered={false}>
             <Option value={QUESTION_STATUS.ACTIVE} key={'optionStatus' + QUESTION_STATUS.ACTIVE}>
-              {t('question.active')}
+              {t('myQuestion.active')}
             </Option>
             <Option value={QUESTION_STATUS.INACTIVE} key={'optionStatus' + QUESTION_STATUS.INACTIVE}>
-              {t('question.inactive')}
+              {t('myQuestion.inactive')}
             </Option>
           </Select>
         </Form.Item>

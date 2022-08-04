@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Button, Col, Input, Modal, Pagination, Popover, Row, Select, Spin, Table } from 'antd';
+import { Button, Col, Input, Pagination, Popover, Row, Select, Spin, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +10,9 @@ import iconSearch from 'assets/images/SearchFilled.svg';
 import iconAdd from 'assets/images/add-white.svg';
 import iconActive from 'assets/images/active.svg';
 import iconInactive from 'assets/images/inactive.svg';
-import CommonQuestionForm from 'components/CommonQuestionForm';
 import { QUESTION_STATUS } from 'contants/constants';
 import SideNav from 'components/SideNav';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -26,9 +26,9 @@ const defaultFilter: IFilterListQuestion = {
 
 export default function MyListExam() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [filter, setFilter] = useState<IFilterListQuestion>(defaultFilter);
-  const [isModalAddQuestionVisible, setIsModalAddQuestionVisible] = useState<boolean>(false);
 
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
@@ -337,7 +337,7 @@ export default function MyListExam() {
               type="primary"
               htmlType="button"
               className={styles.btnAdd}
-              onClick={() => setIsModalAddQuestionVisible(true)}
+              onClick={() => navigate('/exam/create')}
             >
               {t('common.addNew').toUpperCase()} <img height={16} width={16} src={iconAdd} alt="Add" />
             </Button>
@@ -373,16 +373,6 @@ export default function MyListExam() {
           </Col>
         </Col>
       )}
-      <Modal
-        className={styles.modalQuestion}
-        visible={isModalAddQuestionVisible}
-        onCancel={() => setIsModalAddQuestionVisible(false)}
-        closable={true}
-        centered={true}
-        footer={false}
-      >
-        <CommonQuestionForm />
-      </Modal>
     </div>
   );
 }
