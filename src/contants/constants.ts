@@ -11,13 +11,26 @@ export const QUESTION_STATUS = {
   INACTIVE: 0,
 };
 
+export const EXAM_STATUS = {
+  ACTIVE: 1,
+  DRAFT: 2,
+  INACTIVE: 0,
+};
+
 export const QUESTION_TYPE = {
   PICK_ONE: 1,
   MULTI_PICK: 2,
   FILL_TEXTBOX: 3,
 };
 
-export const QUESTION_TYPE_FILL_TEXTBOX = {
+export const OPTION_QUESTION_TYPE_FILL_TEXTBOX = {
   EXACTLY: 1,
   CONTAINS: 2,
 };
+
+export const OPTION_QUESTION_TYPE = {
+  TRUE: 1,
+  FALSE: 0,
+};
+
+export const TYPE_IMAGE = ['image/jpg', 'image/jpeg', 'image/png', 'image/heic', 'image/jfif'];

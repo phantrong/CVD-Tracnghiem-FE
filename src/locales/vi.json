@@ -75,7 +75,30 @@
     "updatedAt": "Ngày cập nhật"
   },
   "createExam": {
-    "title": "Tạo đề thi mới"
+    "title": "Tạo đề thi mới",
+    "showResultFindExam": "Hiện thị kết quả cho '{{keyWord}}'",
+    "addQuestionNew": "Thêm câu hỏi mới",
+    "addQuestionSuccess": "Thêm câu hỏi thành công.",
+    "removeQuestionSuccess": "Xóa câu hỏi thành công.",
+    "addImage": "Thêm ảnh",
+    "removeImage": "Xóa ảnh",
+    "examName": "Tên bài thi",
+    "examStatus": "Trạng thái bài thi",
+    "active": "Công khai",
+    "inactive": "Không công khai",
+    "draft": "Nháp",
+    "create": "Tạo bài thi"
+  },
+  "commonQuestionBox": {
+    "typePickOne": "Chọn phương án đúng nhất",
+    "typeMultiPick": "Chọn nhiều phương án",
+    "typeFill": "Điền phương án tự luận",
+    "trueOption": "Phương án đúng",
+    "falseOption": "Phương án sai",
+    "otherOption": "Phương án thay thế",
+    "addOption": "Thêm vào",
+    "pickOneOption": "Lựa chọn một câu trả lời đúng",
+    "pickMultiOption": "Lựa chọn một (nhiều) câu trả đúng"
   },
   "questionForm": {
     "addQuestion": "Thêm mới câu hỏi",

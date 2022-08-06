@@ -1,6 +1,9 @@
 declare interface IFilterListQuestion {
   status?: number;
+  typeQuestion?: number;
   category?: number;
+  grade?: number;
+  group?: number;
   keyWord?: string;
   page: number;
   per_page: number;
@@ -100,4 +103,25 @@ declare interface ChangePasswordParamsInterface {
 
 declare interface ForgotPasswordParamsInterface {
   email: string;
+}
+
+declare interface FindExamInterface {
+  id: number;
+  image: string;
+  name: string;
+  totalQuestion: number;
+}
+
+declare interface OptionQuestionDetailInterface {
+  id: number;
+  content: string;
+  type: number;
+}
+
+declare interface QuestionDetailInterface {
+  id: number;
+  uuid?: string;
+  type: number;
+  content: string;
+  options: OptionQuestionDetailInterface[];
 }

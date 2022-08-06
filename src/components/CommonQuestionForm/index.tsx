@@ -3,12 +3,16 @@ import { Form, Row, Select, FormInstance, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import styles from './style.module.scss';
-import { MAX_LENGTH_INPUT, QUESTION_STATUS, QUESTION_TYPE, QUESTION_TYPE_FILL_TEXTBOX } from 'contants/constants';
+import {
+  MAX_LENGTH_INPUT,
+  QUESTION_STATUS,
+  QUESTION_TYPE,
+  OPTION_QUESTION_TYPE_FILL_TEXTBOX,
+} from 'contants/constants';
 import TextArea from 'antd/lib/input/TextArea';
 
 import IconAdd from '../../assets/images/icon-add.svg';
 import IconDelete from '../../assets/images/icon-delete.svg';
-import iconSearch from 'assets/images/SearchFilled.svg';
 
 const { Option } = Select;
 
@@ -46,11 +50,11 @@ export default function CommonQuestionForm() {
 
   const listFillTextBox: TypeFillTextBoxInterface[] = [
     {
-      id: QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
+      id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
       name: 'Chính xác',
     },
     {
-      id: QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
+      id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
       name: 'Chứa đựng',
     },
   ];
@@ -317,7 +321,7 @@ export default function CommonQuestionForm() {
                         <Select
                           className={styles.select}
                           bordered={false}
-                          defaultValue={QUESTION_TYPE_FILL_TEXTBOX.EXACTLY}
+                          defaultValue={OPTION_QUESTION_TYPE_FILL_TEXTBOX.EXACTLY}
                         >
                           {optionSelectTypeFillText}
                         </Select>
