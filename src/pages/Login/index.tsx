@@ -2,48 +2,44 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import _ from 'lodash';
 import styles from './style.module.scss';
-import { Input, Button, Form, Row, FormInstance } from 'antd';
+import { Input, Button, Form, Row, FormInstance, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { login } from 'api/authentication';
 import { handleErrorMessage } from 'helper';
 import { AxiosError } from 'axios';
 import { ERROR_RESPONSE } from 'contants/constants';
+import { useMutation } from 'react-query';
 
 interface LoginProps {
   handleShowSignUp: () => void;
   handleShowForgotPassword: () => void;
+  handleHidenAllPopup: () => void;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Login(props: LoginProps) {
-  const { handleShowSignUp, handleShowForgotPassword } = props;
+  const { handleShowSignUp, handleShowForgotPassword, handleHidenAllPopup, setIsAuthenticated } = props;
   const { t } = useTranslation();
   const [form]: FormInstance<any>[] = Form.useForm();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
-  const removeErrorOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    form.setFields([
-      {
-        name: e.target.name,
-        errors: [],
-      },
-    ]);
-  };
-
-  const handleSubmit = async (payload: any) => {
-    setIsLoadingSubmit(true);
-    const params = _.pick(payload, ['username', 'password']);
-    try {
-      const data = await login(params);
-      const { token, refreshToken } = data.data;
-      Cookies.set('token', token, {
+  const { mutate: postLogin } = useMutation((params: LoginParamsInterface) => login(params), {
+    onSuccess: (response: any) => {
+      Cookies.set('token', response?.token, {
         expires: undefined,
       });
-      Cookies.set('refreshToken', refreshToken, {
+      Cookies.set('refreshToken', response?.refreshToken, {
         expires: undefined,
       });
+      setIsAuthenticated(true);
+      handleHidenAllPopup();
+      message.success(t('modalLogin.loginSuccess'));
       setIsLoadingSubmit(false);
-    } catch (error) {
+    },
+    onError: (error) => {
       const errorMessage = error as AxiosError;
+      console.log(errorMessage.response?.status);
+
       if (errorMessage.response?.status === ERROR_RESPONSE) {
         form.setFields([
           {
@@ -63,7 +59,26 @@ export default function Login(props: LoginProps) {
         handleErrorMessage(error);
       }
       setIsLoadingSubmit(false);
-    }
+    },
+  });
+
+  const removeErrorOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    form.setFields([
+      {
+        name: e.target.name,
+        errors: [],
+      },
+    ]);
+  };
+
+  const handleSubmit = (payload: any) => {
+    setIsLoadingSubmit(true);
+    const data: LoginParamsInterface = {
+      username: payload.username,
+      password: payload.password,
+    };
+
+    postLogin(data);
   };
 
   return (

@@ -1,4 +1,4 @@
-export const TOKEN_CUSTOMER = 'token_customer';
+export const TOKEN_CUSTOMER = 'token';
 
 export const ERROR_RESPONSE = 400;
 

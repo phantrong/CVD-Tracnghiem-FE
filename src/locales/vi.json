@@ -119,7 +119,8 @@
     "username": "Tên tài khoản",
     "password": "Mật khẩu",
     "notHaveAccount": "Bạn Chưa có tài khoản?",
-    "forgotPassword": "Quên mật khẩu"
+    "forgotPassword": "Quên mật khẩu",
+    "loginSuccess": "Đăng nhập thành công."
   },
   "modalSignUp": {
     "title": "Đăng ký tài khoản",
@@ -132,7 +133,8 @@
     "email": "Email",
     "validate": {
       "confirmPasswordInvalid": "Nhập lại mật khẩu không đúng."
-    }
+    },
+    "signUpSuccess": "Chúc mừng bạn đã đăng kí tài khoản thành công. Vui lòng đăng nhập."
   },
   "modalChangePassword": {
     "title": "Đổi mật khẩu mới",

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { Menu, Dropdown, Button, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 
-import useProfile from 'hooks/useProfile';
+import { useCustomerProfile } from 'hooks/useProfile';
 import styles from './styles.module.scss';
 import { TOKEN_CUSTOMER } from 'contants/constants';
 import Login from 'pages/Login';
@@ -22,39 +22,47 @@ import logoutImg from 'assets/images/logout.png';
 export default function PageHeader() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isAuthenticated: boolean = !!Cookies.get(TOKEN_CUSTOMER);
-  const { data: profile, isLoading: isLoadingProfile }: any = useProfile(isAuthenticated);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!Cookies.get(TOKEN_CUSTOMER));
+  const profile: any = useCustomerProfile(isAuthenticated);
   const [isModalLoginVisible, setIsModalLoginVisible] = useState<boolean>(false);
   const [isModalSignUpVisible, setIsModalSignUpVisible] = useState<boolean>(false);
   const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     if (!isAuthenticated) return;
     Cookies.remove('token');
     Cookies.remove('refreshToken');
+    setIsAuthenticated(false);
+    navigate('/');
     handleShowLogin();
+  }, [isAuthenticated]);
+
+  const handleHidenAllPopup = () => {
+    setIsModalSignUpVisible(false);
+    setIsModalForgotPasswordVisible(false);
+    setIsModalLoginVisible(false);
   };
 
-  const handleShowLogin = () => {
+  const handleShowLogin = useCallback(() => {
     if (isAuthenticated) return;
     setIsModalSignUpVisible(false);
     setIsModalForgotPasswordVisible(false);
     setIsModalLoginVisible(true);
-  };
+  }, [isAuthenticated]);
 
-  const handleShowSignUp = () => {
+  const handleShowSignUp = useCallback(() => {
     if (isAuthenticated) return;
     setIsModalLoginVisible(false);
     setIsModalForgotPasswordVisible(false);
     setIsModalSignUpVisible(true);
-  };
+  }, [isAuthenticated]);
 
-  const handleShowForgotPassword = () => {
+  const handleShowForgotPassword = useCallback(() => {
     if (isAuthenticated) return;
     setIsModalLoginVisible(false);
     setIsModalSignUpVisible(false);
     setIsModalForgotPasswordVisible(true);
-  };
+  }, [isAuthenticated]);
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>
@@ -104,18 +112,17 @@ export default function PageHeader() {
             </Button>
           </div>
         )}
-        {/* test */}
-        {!isAuthenticated && (
+        {!!isAuthenticated && (
           <div className={styles.menuItem}>
-            {!isLoadingProfile && (
+            {!profile.isLoading && (
               <Dropdown overlay={menu} trigger={['click']}>
                 <div className={styles.dropdownToggle}>
                   <img className={styles.icon} height={32} width={32} src={avatarImg} alt="avatar user" />
-                  <span className={styles.userName}>{profile?.name}</span>
+                  <span className={styles.userName}>{profile?.displayName}</span>
                 </div>
               </Dropdown>
             )}
-            {isLoadingProfile && <Spin size="small" />}
+            {profile.isLoading && <Spin size="small" />}
           </div>
         )}
       </div>
@@ -127,7 +134,12 @@ export default function PageHeader() {
         centered={true}
         footer={false}
       >
-        <Login handleShowSignUp={handleShowSignUp} handleShowForgotPassword={handleShowForgotPassword} />
+        <Login
+          handleShowSignUp={handleShowSignUp}
+          handleShowForgotPassword={handleShowForgotPassword}
+          handleHidenAllPopup={handleHidenAllPopup}
+          setIsAuthenticated={setIsAuthenticated}
+        />
       </Modal>
       <Modal
         className={styles.modalSignUp}

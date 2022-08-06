@@ -88,6 +88,11 @@ declare interface InitialValueQuestionFormInterface {
   options: any[];
 }
 
+declare interface LoginParamsInterface {
+  username: string;
+  password: string;
+}
+
 declare interface SignUpParamsInterface {
   email: string;
   username: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './style.module.scss';
-import { Input, Button, Form, Row } from 'antd';
+import { Input, Button, Form, Row, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FormInstance, RuleObject } from 'antd/lib/form';
 import { signUp } from 'api/authentication';
@@ -21,8 +21,9 @@ export default function SignUp(props: SignUpProps) {
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
   const { mutate: postSignUp } = useMutation((params: SignUpParamsInterface) => signUp(params), {
-    onSuccess: (response: any) => {
-      console.log(response);
+    onSuccess: () => {
+      message.success(t('modalSignUp.signUpSuccess'));
+      handleShowLogin();
       setIsLoadingSubmit(false);
     },
     onError: (error) => {
