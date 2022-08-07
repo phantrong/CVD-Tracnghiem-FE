@@ -12,6 +12,7 @@ const Page404 = lazy(() => import('pages/Page404'));
 const ChangePassword = lazy(() => import('pages/ChangePassword'));
 const CreateExam = lazy(() => import('pages/CreateExam'));
 const PreviewExam = lazy(() => import('pages/PreviewExam'));
+const ExamAction = lazy(() => import('pages/ExamAction'));
 
 export default function AppWrapper() {
   return (
@@ -23,12 +24,13 @@ export default function AppWrapper() {
           <Route path="/" element={<Home />} />
           <Route path="/category" element={<Category />} />
           <Route path="/search-exam" element={<SearchExam />} />
+          <Route path="/exam/preview" element={<PreviewExam />} />
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/question" element={<MyQuestion />} />
             <Route path="/exam" element={<MyListExam />} />
             <Route path="/exam/create" element={<CreateExam />} />
-            <Route path="/exam/preview" element={<PreviewExam />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/exam-action" element={<ExamAction />} />
           </Route>
         </Route>
       </Routes>

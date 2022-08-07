@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -12,14 +12,15 @@ import {
 import CommonQuestionBox from 'components/CommonQuestionBox';
 
 import imageDefault from 'assets/images/image-default.svg';
-import iconQuestion from 'assets/images/question.svg';
-import iconPeople from 'assets/images/people.svg';
 import iconTime from 'assets/images/clock.svg';
-import { useNavigate } from 'react-router-dom';
+import CountDownTime from 'components/CountDownTime';
+import classNames from 'classnames';
 
-export default function PreviewExam() {
+export default function ExamAction() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+
+  const [questionShowIndex, setQuestionShowIndex] = useState<number>(1);
+
   const isLoadingExamDetail = false;
   const examDetail: ExamInterface = {
     id: 1,
@@ -516,18 +517,35 @@ export default function PreviewExam() {
     },
   ];
 
-  const listQuestionShow = useMemo(() => {
+  const questionNumberShow = useMemo(() => {
     return listQuestion.map((question: QuestionDetailInterface, index: number) => (
-      <CommonQuestionBox
-        questionDetail={question}
-        numberQuestion={index + 1}
-        typeShow={TYPE_SHOW_QUESTION_BOX.PREVIEW}
-      />
+      <div
+        className={classNames({
+          [styles.questionNumber]: true,
+          [styles.questionNumberActive]: index + 1 === questionShowIndex,
+        })}
+        onClick={() => setQuestionShowIndex(index + 1)}
+      >
+        {index + 1}
+      </div>
     ));
-  }, [listQuestion]);
+  }, [listQuestion, questionShowIndex]);
+
+  const questionShow = useMemo(() => {
+    return listQuestion.map(
+      (question: QuestionDetailInterface, index: number) =>
+        questionShowIndex === index + 1 && (
+          <CommonQuestionBox
+            questionDetail={question}
+            numberQuestion={index + 1}
+            typeShow={TYPE_SHOW_QUESTION_BOX.EXAM}
+          />
+        )
+    );
+  }, [listQuestion, questionShowIndex]);
 
   return (
-    <div className={styles.previewExam}>
+    <div className={styles.examAction}>
       <Row justify="space-between" align="bottom" className={styles.title}>
         <Col span={24}>
           <h2>{examDetail.name}</h2>
@@ -535,7 +553,7 @@ export default function PreviewExam() {
       </Row>
       <Row justify="space-between" className={styles.formExam}>
         <Col span={16} className={styles.formAddExam}>
-          <Row className={styles.listExamQuestion}>{listQuestionShow}</Row>
+          <Row className={styles.listExamQuestion}>{questionShow}</Row>
         </Col>
         <Col span={8} className={styles.formInfoExam}>
           <Row className={styles.rowUploadAvatar}>
@@ -546,27 +564,17 @@ export default function PreviewExam() {
             <div className={styles.infoMore}>
               <div className={styles.countInfo}>
                 <img src={iconTime} className={styles.icon} alt="countQuestion" />{' '}
-                {examDetail.time
-                  ? t('previewExam.timeExamLimit', { time: examDetail.time })
-                  : t('previewExam.timeExamNoLimit')}
-              </div>
-              <div className={styles.countInfo}>
-                <img src={iconQuestion} className={styles.icon} alt="countQuestion" />{' '}
-                {t('searchExam.countQuestion', { count: examDetail.countQuestion })}
-              </div>
-              <div className={styles.countInfo}>
-                <img src={iconPeople} className={styles.icon} alt="countExam" />{' '}
-                {t('searchExam.countExam', { count: examDetail.countExam })}
+                {examDetail.time ? (
+                  <CountDownTime startTime={examDetail.time * 60} />
+                ) : (
+                  t('previewExam.timeExamNoLimit')
+                )}
               </div>
             </div>
           </Row>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className={styles.btnSubmit}
-            onClick={() => navigate('/exam-action')}
-          >
-            {t('previewExam.start').toUpperCase()}
+          <Row className={styles.listQuestionNumber}>{questionNumberShow}</Row>
+          <Button type="primary" htmlType="submit" className={styles.btnSubmit}>
+            {t('examAction.btnSubmit').toUpperCase()}
           </Button>
         </Col>
       </Row>

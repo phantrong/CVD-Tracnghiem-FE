@@ -1,4 +1,4 @@
-.previewExam {
+.examAction {
     position: relative;
     margin-right: 10px;
     .title {
@@ -84,12 +84,36 @@
                 padding: 12px 0;
                 height: auto;
             }
+            .listQuestionNumber {
+                padding: 10px 20px;
+                .questionNumber {
+                    width: 40px;
+                    height: 40px;
+                    line-height: 40px;
+                    border-radius: 3px;
+                    text-align: center;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 16px;
+                    color: #67758D;
+                    background: #F6F9FC;
+                    display: flex;
+                    margin-right: 10px;
+                    margin-bottom: 10px;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .questionNumberActive {
+                    font-size: 20px;
+                    border: 2px solid #67758D;
+                }
+            }
         }
     }
 }
 
 @media only screen and (max-width: 767px) {
-    .previewExam {
+    .examAction {
         margin: 0;
         .title {
             padding: 10px 15px 0px 15px;

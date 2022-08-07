@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Col, Input, Row } from 'antd';
+import { Button, Col, Input, Radio, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import styles from './style.module.scss';
@@ -70,7 +70,12 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
           <div className={styles.textOption}>
             <span>{t('commonQuestionBox.pickOneOption')}</span>
           </div>
-          <div className={styles.listOption}>
+          <div
+            className={classNames({
+              [styles.listOption]: true,
+              [styles.listOptionExam]: typeShow === TYPE_SHOW_QUESTION_BOX.EXAM,
+            })}
+          >
             {questionDetail.options.map((option: OptionQuestionDetailInterface, indexOption: number) => (
               <Col span={12} className={styles.detailOption}>
                 {typeShow === TYPE_SHOW_QUESTION_BOX.SEARCH && (
@@ -83,6 +88,16 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                 )}
                 {typeShow === TYPE_SHOW_QUESTION_BOX.PREVIEW && (
                   <div className={styles.previewOption}>{TEXT_SHOW_INDEX_OPTION[indexOption]}</div>
+                )}
+                {typeShow === TYPE_SHOW_QUESTION_BOX.EXAM && (
+                  <Input
+                    // onChange={() => handleChangeCheckOptions(index)}
+                    className={styles.radioBtn}
+                    value={indexOption}
+                    type="radio"
+                    name={`checkOption${numberQuestion}`}
+                    id={`question${numberQuestion}-option${indexOption}`}
+                  />
                 )}
                 <div className={styles.contentOption}>{option.content}</div>
               </Col>
@@ -95,7 +110,12 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
           <div className={styles.textOption}>
             <span>{t('commonQuestionBox.pickMultiOption')}</span>
           </div>
-          <div className={styles.listOption}>
+          <div
+            className={classNames({
+              [styles.listOption]: true,
+              [styles.listOptionExam]: typeShow === TYPE_SHOW_QUESTION_BOX.EXAM,
+            })}
+          >
             {questionDetail.options.map((option: OptionQuestionDetailInterface, indexOption: number) => (
               <Col span={12} className={styles.detailOption}>
                 {typeShow === TYPE_SHOW_QUESTION_BOX.SEARCH && (
@@ -108,6 +128,16 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                 )}
                 {typeShow === TYPE_SHOW_QUESTION_BOX.PREVIEW && (
                   <div className={styles.previewOption}>{TEXT_SHOW_INDEX_OPTION[indexOption]}</div>
+                )}
+                {typeShow === TYPE_SHOW_QUESTION_BOX.EXAM && (
+                  <Input
+                    // onChange={() => handleChangeCheckOptions(index)}
+                    className={styles.radioBtn}
+                    value={indexOption}
+                    type="checkbox"
+                    name={`checkOption${numberQuestion}`}
+                    id={`question${numberQuestion}-option${indexOption}`}
+                  />
                 )}
                 <div className={styles.contentOption}>{option.content}</div>
               </Col>
@@ -147,13 +177,18 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
           </div>
         </div>
       )}
-      {questionDetail.type === QUESTION_TYPE.FILL_TEXTBOX && typeShow === TYPE_SHOW_QUESTION_BOX.PREVIEW && (
+      {questionDetail.type === QUESTION_TYPE.FILL_TEXTBOX && typeShow !== TYPE_SHOW_QUESTION_BOX.SEARCH && (
         <div className={styles.boxOption}>
           <div className={styles.textOption}>
             <span>{t('commonQuestionBox.fillTrueOption')}</span>
           </div>
           <div className={styles.listOption}>
-            <Input readOnly disabled className={styles.inputFill} />
+            <Input
+              readOnly={typeShow === TYPE_SHOW_QUESTION_BOX.PREVIEW}
+              disabled={typeShow === TYPE_SHOW_QUESTION_BOX.PREVIEW}
+              name={`fillOption${numberQuestion}`}
+              className={styles.inputFill}
+            />
           </div>
         </div>
       )}

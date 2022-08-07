@@ -156,9 +156,11 @@
     "passwordRequired": "Vui lòng nhập mật khẩu"
   },
   "previewExam" : {
-    "title": "Chuẩn bị thi",
     "timeExamLimit": "{{time}} phút",
     "timeExamNoLimit": "Không giới hạn",
     "start": "Bắt đầu thi"
+  },
+  "examAction": {
+    "btnSubmit": "Nộp bài"
   }
 }
