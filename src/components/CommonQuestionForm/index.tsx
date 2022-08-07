@@ -13,6 +13,15 @@ import TextArea from 'antd/lib/input/TextArea';
 
 import IconAdd from '../../assets/images/icon-add.svg';
 import IconDelete from '../../assets/images/icon-delete.svg';
+import {
+  useGetListContentQuestion,
+  useGetListGradeQuestion,
+  useGetListGroupQuestion,
+  useGetListStatustQuestion,
+  useGetListSubjectQuestion,
+  useGetListTypeQuestion,
+} from 'hooks/useQuestion';
+import { isConstructorDeclaration } from 'typescript';
 
 const { Option } = Select;
 
@@ -27,6 +36,17 @@ const formItemLayout = {
   },
 };
 
+const listFillTextBox: TypeFillTextBoxInterface[] = [
+  {
+    id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
+    name: 'Chính xác',
+  },
+  {
+    id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
+    name: 'Chứa đựng',
+  },
+];
+
 const defaultFormValue: InitialValueQuestionFormInterface = {
   type: QUESTION_TYPE.PICK_ONE,
   category: undefined,
@@ -38,90 +58,19 @@ const defaultFormValue: InitialValueQuestionFormInterface = {
   options: [undefined, undefined, undefined, undefined],
 };
 
-interface CommonQuestionFormProps {
-  handleShowSignUp: () => void;
-}
-
 export default function CommonQuestionForm() {
   const { t } = useTranslation();
   const [form]: FormInstance<any>[] = Form.useForm();
   const [checkedOptions, setCheckOptions] = useState<number[]>([]);
   const [typeOption, setTypeOption] = useState<number>(QUESTION_TYPE.PICK_ONE);
 
-  const listFillTextBox: TypeFillTextBoxInterface[] = [
-    {
-      id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
-      name: 'Chính xác',
-    },
-    {
-      id: OPTION_QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
-      name: 'Chứa đựng',
-    },
-  ];
-
-  const isLoadingListType = false;
-  const listType: TypeQuestionInterface[] = [
-    {
-      id: 1,
-      name: 'Chọn phương án đúng nhất',
-    },
-    {
-      id: 2,
-      name: 'Chọn nhiều phương án',
-    },
-    {
-      id: 3,
-      name: 'Điền vào chỗ trống',
-    },
-  ];
-
-  const isLoadingListCategory = false;
-  const listCategory: CategoryInterface[] = [
-    {
-      id: 1,
-      name: 'Tin học',
-    },
-    {
-      id: 2,
-      name: 'Tin học',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-    },
-    {
-      id: 4,
-      name: 'Tin học',
-    },
-    {
-      id: 5,
-      name: 'Tin học',
-    },
-  ];
-
-  const isLoadingListGrade = false;
-  const listGrade: GradeInterface[] = [
-    {
-      id: 1,
-      name: 'Lớp 10',
-    },
-    {
-      id: 2,
-      name: 'Lớp 11',
-    },
-  ];
-
-  const isLoadingListGroup = false;
-  const listGroup: GroupQuestionInterface[] = [
-    {
-      id: 1,
-      name: 'Câu hỏi hiểu biết',
-    },
-    {
-      id: 2,
-      name: 'Câu hỏi nâng cao',
-    },
-  ];
+  const { data: listType, isLoading: isLoadingListType } = useGetListTypeQuestion({});
+  const { data: listSubject, isLoading: isLoadingListSubject } = useGetListSubjectQuestion({});
+  const { data: listGrade, isLoading: isLoadingListGrade } = useGetListGradeQuestion({});
+  const { data: listGroup, isLoading: isLoadingListGroup } = useGetListGroupQuestion({});
+  const { data: listStatus, isLoading: isLoadingListStatus } = useGetListStatustQuestion({});
+  const { data: listQuestionContent, isLoading: isLoadingListQuestionContent } = useGetListContentQuestion({});
+  console.log('listQuestionContent', listQuestionContent);
 
   const handleChangeTypeQuestion = (value: number) => {
     setTypeOption(value);
@@ -143,7 +92,7 @@ export default function CommonQuestionForm() {
   };
 
   const optionSelectType = useMemo(() => {
-    return listType.map((type: TypeQuestionInterface) => (
+    return listType?.map((type: TypeQuestionInterface) => (
       <Option key={'type' + type.id} value={type.id}>
         {type.name}
       </Option>
@@ -151,15 +100,15 @@ export default function CommonQuestionForm() {
   }, [listType]);
 
   const optionSelectCategory = useMemo(() => {
-    return listCategory.map((category: CategoryInterface) => (
+    return listSubject?.map((category: CategoryInterface) => (
       <Option key={'category' + category.id} value={category.id}>
         {category.name}
       </Option>
     ));
-  }, [listCategory]);
+  }, [listSubject]);
 
   const optionSelectGrade = useMemo(() => {
-    return listGrade.map((grade: GradeInterface) => (
+    return listGrade?.map((grade: GradeInterface) => (
       <Option key={'grade' + grade.id} value={grade.id}>
         {grade.name}
       </Option>
@@ -167,7 +116,7 @@ export default function CommonQuestionForm() {
   }, [listGrade]);
 
   const optionSelectTypeFillText = useMemo(() => {
-    return listFillTextBox.map((type: TypeFillTextBoxInterface) => (
+    return listFillTextBox?.map((type: TypeFillTextBoxInterface) => (
       <Option key={'fill' + type.id} value={type.id}>
         {type.name}
       </Option>
@@ -175,12 +124,20 @@ export default function CommonQuestionForm() {
   }, [listFillTextBox]);
 
   const optionSelectGroup = useMemo(() => {
-    return listGroup.map((group: GroupQuestionInterface) => (
+    return listGroup?.map((group: GroupQuestionInterface) => (
       <Option key={'group' + group.id} value={group.id}>
         {group.name}
       </Option>
     ));
   }, [listGroup]);
+
+  const optionSelectStatus = useMemo(() => {
+    return listStatus?.map((group: GroupQuestionInterface) => (
+      <Option key={'status' + group.id} value={group.id}>
+        {group.name}
+      </Option>
+    ));
+  }, [listStatus]);
 
   return (
     <Row justify="center" className={styles.mainForm}>
@@ -215,7 +172,7 @@ export default function CommonQuestionForm() {
             <Select
               className={styles.select}
               bordered={false}
-              loading={isLoadingListCategory}
+              loading={isLoadingListSubject}
               placeholder={t('questionForm.category')}
             >
               {optionSelectCategory}
@@ -356,13 +313,13 @@ export default function CommonQuestionForm() {
           </Form.List>
         </Row>
         <Form.Item name="status" label={t('myQuestion.status')} className={styles.form} labelCol={{ span: 24 }}>
-          <Select placeholder={t('myQuestion.status')} className={styles.select} bordered={false}>
-            <Option value={QUESTION_STATUS.ACTIVE} key={'optionStatus' + QUESTION_STATUS.ACTIVE}>
-              {t('myQuestion.active')}
-            </Option>
-            <Option value={QUESTION_STATUS.INACTIVE} key={'optionStatus' + QUESTION_STATUS.INACTIVE}>
-              {t('myQuestion.inactive')}
-            </Option>
+          <Select
+            placeholder={t('myQuestion.status')}
+            loading={isLoadingListStatus}
+            className={styles.select}
+            bordered={false}
+          >
+            {optionSelectStatus}
           </Select>
         </Form.Item>
         <Form.Item labelCol={{ span: 24 }} className={styles.form}>
