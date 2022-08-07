@@ -62,11 +62,12 @@ declare interface ExamInterface {
   name: string;
   countQuestion: number;
   countExam: number;
-  subjects: {
+  subjects?: {
     id: number;
     name: string;
   }[];
-  image: string;
+  image?: string;
+  time?: number | null;
 }
 
 declare interface IColumnTable {
@@ -120,7 +121,7 @@ declare interface FindExamInterface {
 declare interface OptionQuestionDetailInterface {
   id: number;
   content: string;
-  type: number;
+  type?: number; // true/fasle
 }
 
 declare interface QuestionDetailInterface {

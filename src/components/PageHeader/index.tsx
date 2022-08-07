@@ -35,7 +35,8 @@ export default function PageHeader() {
     setIsAuthenticated(false);
     navigate('/');
     handleShowLogin();
-  }, [isAuthenticated]);
+    // eslint-disable-next-line
+  }, [isAuthenticated, navigate]);
 
   const handleHidenAllPopup = () => {
     setIsModalSignUpVisible(false);

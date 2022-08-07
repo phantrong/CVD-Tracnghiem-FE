@@ -381,7 +381,7 @@ export default function CreateExam() {
       setListQuestionSelected([...listQuestionSelected, question]);
       message.success(t('createExam.addQuestionSuccess'));
     },
-    [listQuestionSelected]
+    [listQuestionSelected, t]
   );
 
   const handleRemoveQuestion = useCallback(
@@ -393,7 +393,7 @@ export default function CreateExam() {
       );
       message.success(t('createExam.removeQuestionSuccess'));
     },
-    [listQuestionSelected]
+    [listQuestionSelected, t]
   );
 
   const handleSubmit = (payload: any) => {

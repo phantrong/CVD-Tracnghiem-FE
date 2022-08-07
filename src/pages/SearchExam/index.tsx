@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Col, Input, Pagination, Row, Select, Spin } from 'antd';
 import styles from './styles.module.scss';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ const SORT_BY = {
 export default function SearchExam() {
   const { t } = useTranslation();
   const { state }: any = useLocation();
+  const navigate = useNavigate();
   const [keyWord, setKeyWord] = useState<string>(state?.keyWord);
   const [categorySelected, setCategorySelected] = useState<number>();
   const [sortBy, setSortBy] = useState<string>(SORT_BY.NEW);
@@ -271,7 +272,7 @@ export default function SearchExam() {
           <img src={exam.image} className={styles.imageExam} alt="Exam" />
           <div className={styles.infoExam}>
             <div className={styles.listCategory}>
-              {exam?.subjects.map((category: CategoryInterface) => (
+              {exam?.subjects?.map((category: CategoryInterface) => (
                 <div className={styles.category}>{category.name}</div>
               ))}
             </div>
@@ -285,7 +286,13 @@ export default function SearchExam() {
                 <img src={iconPeople} className={styles.imageExam} alt="countExam" />{' '}
                 {t('searchExam.countExam', { count: exam.countExam })}
               </div>
-              <Button block type="primary" htmlType="button" className={styles.btnExam}>
+              <Button
+                block
+                type="primary"
+                htmlType="button"
+                className={styles.btnExam}
+                onClick={() => navigate('/exam/preview')}
+              >
                 {t('searchExam.examNow').toUpperCase()}
               </Button>
             </div>

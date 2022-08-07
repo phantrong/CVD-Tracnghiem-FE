@@ -82,14 +82,14 @@
                 align-items: center;
                 .trueOption,
                 .falseOption,
-                .otherOption {
+                .otherOption,
+                .previewOption {
                     display: inline-block;
                     margin-left: 12px;
                     margin-right: 8px;
                     height: 20px;
                     width: 20px;
                     border-radius: 50%;
-                    background-color: #D8D8D8;
                     vertical-align: middle;
                 }
                 .trueOption {
@@ -101,11 +101,27 @@
                 .falseOption {
                     background-color: #F14D76;
                 }
+                .previewOption {
+                    display: inline-block;
+                    margin-left: 12px;
+                    margin-right: 0px;
+                    height: 20px;
+                    border-radius: 50%;
+                    vertical-align: middle;
+                }
                 .contentOption {
                     word-break: break-all;
                     white-space: pre-wrap;
                     max-width: 82%;
                 }
+            }
+            .inputFill {
+                pointer-events: none;
+                border: 1px solid #D6D6D6;
+                box-sizing: border-box;
+                border-radius: 5px;
+                padding: 12px 10px;
+                height: 45px;
             }
         }
     }

@@ -1,4 +1,3 @@
-
 import React, { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import AuthWrapper from 'wrappers/AuthWrapper';
@@ -12,6 +11,7 @@ const MyListExam = lazy(() => import('pages/MyListExam'));
 const Page404 = lazy(() => import('pages/Page404'));
 const ChangePassword = lazy(() => import('pages/ChangePassword'));
 const CreateExam = lazy(() => import('pages/CreateExam'));
+const PreviewExam = lazy(() => import('pages/PreviewExam'));
 
 export default function AppWrapper() {
   return (
@@ -27,6 +27,7 @@ export default function AppWrapper() {
             <Route path="/question" element={<MyQuestion />} />
             <Route path="/exam" element={<MyListExam />} />
             <Route path="/exam/create" element={<CreateExam />} />
+            <Route path="/exam/preview" element={<PreviewExam />} />
             <Route path="/change-password" element={<ChangePassword />} />
           </Route>
         </Route>

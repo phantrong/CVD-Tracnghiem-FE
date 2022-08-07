@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
-import _ from 'lodash';
 import styles from './style.module.scss';
 import { Input, Button, Form, Row, FormInstance, message } from 'antd';
 import { useTranslation } from 'react-i18next';

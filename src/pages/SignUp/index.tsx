@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './style.module.scss';
 import { Input, Button, Form, Row, message } from 'antd';
 import { useTranslation } from 'react-i18next';

@@ -90,9 +90,11 @@
     "create": "Tạo bài thi"
   },
   "commonQuestionBox": {
+    "numberQuestion": "Câu {{number}}.",
     "typePickOne": "Chọn phương án đúng nhất",
     "typeMultiPick": "Chọn nhiều phương án",
     "typeFill": "Điền phương án tự luận",
+    "fillTrueOption": "Điền vào câu trả lời đúng nhất",
     "trueOption": "Phương án đúng",
     "falseOption": "Phương án sai",
     "otherOption": "Phương án thay thế",
@@ -152,5 +154,11 @@
   "validate": {
     "usernameRequired": "Vui lòng nhập tài khoản",
     "passwordRequired": "Vui lòng nhập mật khẩu"
+  },
+  "previewExam" : {
+    "title": "Chuẩn bị thi",
+    "timeExamLimit": "{{time}} phút",
+    "timeExamNoLimit": "Không giới hạn",
+    "start": "Bắt đầu thi"
   }
 }

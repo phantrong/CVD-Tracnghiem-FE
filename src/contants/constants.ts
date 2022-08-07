@@ -34,3 +34,11 @@ export const OPTION_QUESTION_TYPE = {
 };
 
 export const TYPE_IMAGE = ['image/jpg', 'image/jpeg', 'image/png', 'image/heic', 'image/jfif'];
+
+export const TYPE_SHOW_QUESTION_BOX = {
+  SEARCH: 1,
+  PREVIEW: 2,
+  EXAM: 3,
+};
+
+export const TEXT_SHOW_INDEX_OPTION = ['A.', 'B.', 'C.', 'D.', 'E.', 'F.', 'G.', 'H.'];
