@@ -310,10 +310,6 @@ export default function SearchExam() {
     ));
   }, [categorySelected, listCategory]);
 
-  useEffect(() => {
-    window.history.replaceState({}, document.title);
-  }, []);
-
   return (
     <div className={styles.searchExam}>
       <Row className={styles.containerExam}>
