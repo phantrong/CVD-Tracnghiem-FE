@@ -20,7 +20,6 @@ export const EXAM_STATUS = {
 export const QUESTION_TYPE = {
   PICK_ONE: 1,
   MULTI_PICK: 2,
-  FILL_TEXTBOX: 3,
 };
 
 export const OPTION_QUESTION_TYPE_FILL_TEXTBOX = {

@@ -19,6 +19,8 @@ import examImg from 'assets/images/exam.png';
 import passwordImg from 'assets/images/password.png';
 import logoutImg from 'assets/images/logout.png';
 
+const { confirm } = Modal;
+
 export default function PageHeader() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -30,13 +32,27 @@ export default function PageHeader() {
 
   const handleLogout = useCallback(() => {
     if (!isAuthenticated) return;
-    Cookies.remove('token');
-    Cookies.remove('refreshToken');
-    setIsAuthenticated(false);
-    navigate('/');
-    handleShowLogin();
+    confirm({
+      title: (
+        <>
+          <div>{t('common.confirmLogOut')}</div>
+        </>
+      ),
+      okText: t('common.btnOk'),
+      cancelText: t('common.btnCancel'),
+      icon: <></>,
+      className: 'modal-confirm-normal',
+      centered: true,
+      onOk() {
+        Cookies.remove('token');
+        Cookies.remove('refreshToken');
+        setIsAuthenticated(false);
+        navigate('/');
+        handleShowLogin();
+      },
+    });
     // eslint-disable-next-line
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, t]);
 
   const handleHidenAllPopup = () => {
     setIsModalSignUpVisible(false);

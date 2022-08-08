@@ -16,7 +16,10 @@
     "delete": "Xóa",
     "addNew": "Thêm mới",
     "noData": "Không có dữ liệu",
-    "save": "Lưu"
+    "save": "Lưu",
+    "confirmLogOut": "Bạn có muốn đăng xuất không?",
+    "btnOk": "OK",
+    "btnCancel": "Hủy"
   },
   "home": {
     "mainAppName": "TRẮC NGHIỆM ONLINE",
@@ -57,7 +60,8 @@
     "content": "Nội dung câu hỏi",
     "group": "Nhóm câu hỏi",
     "createdAt": "Ngày tạo",
-    "updatedAt": "Ngày cập nhật"
+    "updatedAt": "Ngày cập nhật",
+    "find": "Tìm kiếm mã, nội dung câu hỏi"
   },
   "myListExam": {
     "exam": "Đề thi",
@@ -104,6 +108,7 @@
   },
   "questionForm": {
     "addQuestion": "Thêm mới câu hỏi",
+    "editQuestion": "Sửa câu hỏi",
     "typeQuestion": "Loại câu hỏi",
     "groupQuestion": "Nhóm câu hỏi",
     "grade": "Lớp",

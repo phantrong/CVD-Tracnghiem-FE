@@ -10,3 +10,9 @@ export const getListContentQuestion = (params: any) =>
   sendPost('/rpc/tracnghiem/question/single-list-question-content', params);
 export const getListTypeQuestion = (params: any) =>
   sendPost('/rpc/tracnghiem/question/single-list-question-type', params);
+export const createQuestion = (params: any) => sendPost('/rpc/tracnghiem/question/create', params);
+export const getQuestionDetail = (params: any) => sendPost('/rpc/tracnghiem/question/get', params);
+export const getListQuestion = (params: any) => sendPost('/rpc/tracnghiem/question/list', params);
+export const getCountQuestions = (params: any) => sendPost('/rpc/tracnghiem/question/count', params);
+export const updateQuestion = (params: any) => sendPost('/rpc/tracnghiem/question/update', params);
+export const deleteQuestion = (params: any) => sendPost('/rpc/tracnghiem/question/delete', params);

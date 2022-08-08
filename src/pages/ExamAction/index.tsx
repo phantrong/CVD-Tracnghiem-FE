@@ -90,7 +90,7 @@ export default function ExamAction() {
     },
     {
       id: 3,
-      type: QUESTION_TYPE.FILL_TEXTBOX,
+      type: QUESTION_TYPE.PICK_ONE,
       content: 'áhdkjahsdkjadjkashdklahd',
       options: [
         {

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './styles.module.scss';
 import SideNav from 'components/SideNav';
 import {
+  ERROR_RESPONSE,
   EXAM_STATUS,
   OPTION_QUESTION_TYPE,
   OPTION_QUESTION_TYPE_FILL_TEXTBOX,
@@ -16,8 +17,11 @@ import CommonQuestionBox from 'components/CommonQuestionBox';
 import iconSearch from 'assets/images/SearchFilled.svg';
 import iconAdd from 'assets/images/add-white.svg';
 import imageDefault from 'assets/images/image-default.svg';
-import { validateSizeImg, validateTypeImg } from 'helper';
+import { handleErrorMessage, validateSizeImg, validateTypeImg } from 'helper';
 import { UploadChangeParam } from 'antd/lib/upload';
+import { createQuestion } from 'api/question';
+import { useMutation } from 'react-query';
+import { AxiosError } from 'axios';
 
 const { Option } = Select;
 
@@ -40,6 +44,46 @@ export default function CreateExam() {
   const [avatarURL, setAvatarURL] = useState<string>(imageDefault);
   const [fileAvatar, setFileAvatar] = useState<string>();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
+
+  const { mutate: postCreate } = useMutation((params: any) => createQuestion(params), {
+    onSuccess: () => {
+      message.success(t('modalSignUp.signUpSuccess'));
+      setIsLoadingSubmit(false);
+    },
+    onError: (error) => {
+      const errorMessage = error as AxiosError;
+      if (errorMessage.response?.status === ERROR_RESPONSE) {
+        // form.setFields([
+        //   {
+        //     name: 'username',
+        //     errors: errorMessage.response?.data?.errors?.username
+        //       ? [errorMessage.response?.data?.errors?.username]
+        //       : [],
+        //   },
+        //   {
+        //     name: 'displayName',
+        //     errors: errorMessage.response?.data?.errors?.displayName
+        //       ? [errorMessage.response?.data?.errors?.displayName]
+        //       : [],
+        //   },
+        //   {
+        //     name: 'email',
+        //     errors: errorMessage.response?.data?.errors?.email ? [errorMessage.response?.data?.errors?.email] : [],
+        //   },
+        //   {
+        //     name: 'password',
+        //     errors: errorMessage.response?.data?.errors?.password
+        //       ? [errorMessage.response?.data?.errors?.password]
+        //       : [],
+        //   },
+        // ]);
+        console.log(errorMessage);
+      } else {
+        handleErrorMessage(error);
+      }
+      setIsLoadingSubmit(false);
+    },
+  });
 
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
@@ -274,7 +318,7 @@ export default function CreateExam() {
     },
     {
       id: 3,
-      type: QUESTION_TYPE.FILL_TEXTBOX,
+      type: QUESTION_TYPE.MULTI_PICK,
       content: 'áhdkjahsdkjadjkashdklahd',
       options: [
         {

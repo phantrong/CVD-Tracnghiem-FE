@@ -89,7 +89,7 @@ export default function PreviewExam() {
     },
     {
       id: 3,
-      type: QUESTION_TYPE.FILL_TEXTBOX,
+      type: QUESTION_TYPE.MULTI_PICK,
       content: 'áhdkjahsdkjadjkashdklahd',
       options: [
         {

@@ -19,7 +19,6 @@ export const getErrorMessage = (error: any) => {
 export const getQuestionTypeText = (type: number) => {
   if (type === QUESTION_TYPE.PICK_ONE) return i18next.t('commonQuestionBox.typePickOne');
   if (type === QUESTION_TYPE.MULTI_PICK) return i18next.t('commonQuestionBox.typeMultiPick');
-  if (type === QUESTION_TYPE.FILL_TEXTBOX) return i18next.t('commonQuestionBox.typeFill');
   return '';
 };
 
