@@ -22,14 +22,14 @@ import { UploadChangeParam } from 'antd/lib/upload';
 import { createQuestion } from 'api/question';
 import { useMutation } from 'react-query';
 import { AxiosError } from 'axios';
+import { useGetListGradeExam, useGetListLevelExam, useGetListPublicExam, useGetListSubjectExam } from 'hooks/useExam';
 
 const { Option } = Select;
 
 const defaultFilter: IFilterListQuestion = {
-  typeQuestion: undefined,
-  category: undefined,
+  subject: undefined,
   grade: undefined,
-  group: undefined,
+  level: undefined,
   keyWord: '',
   page: 1,
   per_page: 10,
@@ -85,181 +85,12 @@ export default function CreateExam() {
     },
   });
 
-  // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
+  const {data: listExam, isLoading: isLoadingExam} = useGetListPublicExam({});
+  const {data: listSubject, isLoading: isLoadingSubject} = useGetListSubjectExam({});
+  const {data: listGrade, isLoading: isLoadingGrade} = useGetListGradeExam({});
+  const {data: listLevel, isLoading: isLoadingLevel} = useGetListLevelExam({});
 
-  const isLoadingListType = false;
-  const listType: TypeQuestionInterface[] = [
-    {
-      id: 1,
-      name: 'Chọn phương án đúng nhất',
-    },
-    {
-      id: 2,
-      name: 'Chọn nhiều phương án',
-    },
-    {
-      id: 3,
-      name: 'Điền vào chỗ trống',
-    },
-  ];
-
-  const isLoadingListCategory = false;
-  const listCategory: CategoryInterface[] = [
-    {
-      id: 1,
-      name: 'Tin học',
-    },
-    {
-      id: 2,
-      name: 'Tin học',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-    },
-    {
-      id: 4,
-      name: 'Tin học',
-    },
-    {
-      id: 5,
-      name: 'Tin học',
-    },
-  ];
-
-  const isLoadingListGrade = false;
-  const listGrade: GradeInterface[] = [
-    {
-      id: 1,
-      name: 'Lớp 10',
-    },
-    {
-      id: 2,
-      name: 'Lớp 11',
-    },
-  ];
-
-  const isLoadingListGroup = false;
-  const listGroup: GroupQuestionInterface[] = [
-    {
-      id: 1,
-      name: 'Câu hỏi hiểu biết',
-    },
-    {
-      id: 2,
-      name: 'Câu hỏi nâng cao',
-    },
-  ];
-
-  const isLoadingExam = false;
-  const listExam: FindExamInterface[] = [
-    {
-      id: 1,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 1',
-      totalQuestion: 30,
-    },
-    {
-      id: 2,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 2',
-      totalQuestion: 30,
-    },
-    {
-      id: 3,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 3',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-    {
-      id: 4,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-      name: 'bài thi 4',
-      totalQuestion: 30,
-    },
-  ];
-
+  console.log(listExam);
   const isLoadingListQuetion = false;
   const listQuestion: QuestionDetailInterface[] = [
     {
@@ -363,12 +194,12 @@ export default function CreateExam() {
     setFileAvatar('');
   };
 
-  const handleChangeTypeQuestion = useCallback(
+  const handleChangeSubject = useCallback(
     (value: number) => {
       setFilter({
         ...filter,
         page: 1,
-        typeQuestion: value,
+        subject: value,
       });
     },
     [filter]
@@ -385,23 +216,12 @@ export default function CreateExam() {
     [filter]
   );
 
-  const handleChangeGroup = useCallback(
+  const handleChangeLevel = useCallback(
     (value: number) => {
       setFilter({
         ...filter,
         page: 1,
-        group: value,
-      });
-    },
-    [filter]
-  );
-
-  const handleChangeCategory = useCallback(
-    (value: number) => {
-      setFilter({
-        ...filter,
-        page: 1,
-        category: value,
+        level: value,
       });
     },
     [filter]
@@ -444,40 +264,32 @@ export default function CreateExam() {
     console.log(payload);
   };
 
-  const optionSelectType = useMemo(() => {
-    return listType.map((type: TypeQuestionInterface) => (
-      <Option key={'type' + type.id} value={type.id}>
-        {type.name}
+  const optionSelectSubject = useMemo(() => {
+    return listSubject?.map((subject: CategoryInterface) => (
+      <Option key={'subject' + subject.id} value={subject.id}>
+        {subject.name}
       </Option>
     ));
-  }, [listType]);
-
-  const optionSelectCategory = useMemo(() => {
-    return listCategory.map((category: CategoryInterface) => (
-      <Option key={'category' + category.id} value={category.id}>
-        {category.name}
-      </Option>
-    ));
-  }, [listCategory]);
+  }, [listSubject]);
 
   const optionSelectGrade = useMemo(() => {
-    return listGrade.map((grade: GradeInterface) => (
+    return listGrade?.map((grade: GradeInterface) => (
       <Option key={'grade' + grade.id} value={grade.id}>
         {grade.name}
       </Option>
     ));
   }, [listGrade]);
 
-  const optionSelectGroup = useMemo(() => {
-    return listGroup.map((group: GroupQuestionInterface) => (
-      <Option key={'group' + group.id} value={group.id}>
-        {group.name}
+  const optionSelectLevel = useMemo(() => {
+    return listLevel?.map((level: GroupQuestionInterface) => (
+      <Option key={'level' + level.id} value={level.id}>
+        {level.name}
       </Option>
     ));
-  }, [listGroup]);
+  }, [listLevel]);
 
   const listExamShow = useMemo(() => {
-    return listExam.map((exam: FindExamInterface) => (
+    return listExam?.map((exam: FindExamInterface) => (
       <div className={styles.boxExam}>
         <img src={exam.image} alt="exam" />
         <div>{`${exam.name} (${exam.totalQuestion} câu hỏi)`}</div>
@@ -607,25 +419,16 @@ export default function CreateExam() {
             <Select
               className={styles.select}
               bordered={false}
-              loading={isLoadingListType}
-              placeholder={t('questionForm.typeQuestion')}
-              onChange={handleChangeTypeQuestion}
-            >
-              {optionSelectType}
-            </Select>
-            <Select
-              className={styles.select}
-              bordered={false}
-              loading={isLoadingListCategory}
+              loading={isLoadingSubject}
               placeholder={t('questionForm.category')}
-              onChange={handleChangeCategory}
+              onChange={handleChangeSubject}
             >
-              {optionSelectCategory}
+              {optionSelectSubject}
             </Select>
             <Select
               className={styles.select}
               bordered={false}
-              loading={isLoadingListGrade}
+              loading={isLoadingGrade}
               placeholder={t('questionForm.grade')}
               onChange={handleChangeGrade}
             >
@@ -634,11 +437,11 @@ export default function CreateExam() {
             <Select
               className={styles.select}
               bordered={false}
-              loading={isLoadingListGroup}
-              placeholder={t('questionForm.groupQuestion')}
-              onChange={handleChangeGroup}
+              loading={isLoadingLevel}
+              placeholder={"Cấp độ"}
+              onChange={handleChangeLevel}
             >
-              {optionSelectGroup}
+              {optionSelectLevel}
             </Select>
           </Col>
           <Col span={8} className={styles.showExam}>

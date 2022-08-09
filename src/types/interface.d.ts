@@ -4,6 +4,8 @@ declare interface IFilterListQuestion {
   category?: number;
   grade?: number;
   group?: number;
+  level?: number;
+  subject?: number;
   keyWord?: string;
   page: number;
   per_page: number;
