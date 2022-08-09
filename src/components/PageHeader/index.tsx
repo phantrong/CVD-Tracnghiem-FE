@@ -83,7 +83,7 @@ export default function PageHeader() {
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>
-      <Menu.Item key="1">
+      <Menu.Item key="1" onClick={() => navigate('/profile')}>
         <img className={styles.icon} height={24} width={24} src={avatarImg} alt="profile" />
         &ensp;{t('common.profile')}
       </Menu.Item>

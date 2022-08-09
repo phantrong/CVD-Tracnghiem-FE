@@ -13,6 +13,7 @@ const ChangePassword = lazy(() => import('pages/ChangePassword'));
 const CreateExam = lazy(() => import('pages/CreateExam'));
 const PreviewExam = lazy(() => import('pages/PreviewExam'));
 const ExamAction = lazy(() => import('pages/ExamAction'));
+const MyProfile = lazy(() => import('pages/MyProfile'));
 
 export default function AppWrapper() {
   return (
@@ -26,6 +27,7 @@ export default function AppWrapper() {
           <Route path="/search-exam" element={<SearchExam />} />
           <Route path="/exam/preview" element={<PreviewExam />} />
           <Route path="/" element={<PrivateRoute />}>
+            <Route path="/profile" element={<MyProfile />} />
             <Route path="/question" element={<MyQuestion />} />
             <Route path="/exam" element={<MyListExam />} />
             <Route path="/exam/create" element={<CreateExam />} />
