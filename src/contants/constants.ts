@@ -12,9 +12,9 @@ export const QUESTION_STATUS = {
 };
 
 export const EXAM_STATUS = {
-  ACTIVE: 1,
-  DRAFT: 2,
-  INACTIVE: 0,
+  ACTIVE: 2,
+  DRAFT: 1,
+  INACTIVE: 3,
 };
 
 export const QUESTION_TYPE = {

@@ -46,9 +46,6 @@
             padding-bottom: 20px;
             box-shadow: 0 5px 30px RGB(0 22 84 / 10%);
             -webkit-box-shadow: 0 5px 30px RGB(0 22 84 / 10%);
-            position: fixed;
-            right: 2%;
-            width: 30%;
             .rowUploadAvatar {
                 display: flex;
                 flex-direction: column;
@@ -150,9 +147,15 @@
         padding: 0 !important;
         height: 100vh !important;
     }
+    .message {
+        color: red;
+        font-size: 16px;
+        align-items: center;
+    }
     .formSearchQuestion {
         .colKeyWord,
-        .colFilterSelect {
+        .colFilterSelect,
+        .colCheckbox {
             padding: 0 20px;
         }
         .colKeyWord {
@@ -163,6 +166,10 @@
             padding: 0 10px;
         }
         .colFilterSelect {
+            margin-top: 20px;
+            display: flex;
+        }
+        .colCheckbox {
             margin-top: 20px;
             display: flex;
             border-bottom: 1px solid #dfdfdf;
@@ -192,7 +199,8 @@
             min-width: 150px;
         }
         .showExam {
-            height: calc(100vh - 56px - 56px - 30px);
+            height: calc(100vh - 56px - 56px - 72px);
+            position: relative;
             overflow: auto;
             .showResultFindExam {
                 margin: 10px 0;
@@ -222,7 +230,7 @@
             background-color: #F2F2F2;
             border-radius: 4px 0 0 4px;
             display: inline-block;
-            height: calc(100vh - 56px - 56px - 30px);
+            height: calc(100vh - 56px - 56px - 72px);
             position: relative;
             padding: 8px;
             box-sizing: border-box;

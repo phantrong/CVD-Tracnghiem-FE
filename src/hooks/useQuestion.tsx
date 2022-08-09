@@ -85,7 +85,7 @@ export const useGetQuestionDetail = (params: any) => {
   return { data: data, isLoading };
 };
 
-export const useListQuestion = (params: any) => {
+export const useListQuestion = (params: any, enabled?: boolean) => {
   const { data, isLoading } = useQuery(
     [GET_LIST_QUESTION, params],
     async () => {
@@ -93,7 +93,7 @@ export const useListQuestion = (params: any) => {
       return response;
     },
     {
-      enabled: !!params?.creatorId?.equal && isNumber(params?.creatorId?.equal),
+      enabled: enabled,
     }
   );
   return { data: data, isLoading };

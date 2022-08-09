@@ -3,12 +3,7 @@ import { Button, Col, Input, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import styles from './style.module.scss';
-import {
-  OPTION_QUESTION_TYPE,
-  QUESTION_TYPE,
-  TEXT_SHOW_INDEX_OPTION,
-  TYPE_SHOW_QUESTION_BOX,
-} from 'contants/constants';
+import { QUESTION_TYPE, TEXT_SHOW_INDEX_OPTION, TYPE_SHOW_QUESTION_BOX } from 'contants/constants';
 import classNames from 'classnames';
 import { getQuestionTypeText } from 'helper';
 
@@ -16,7 +11,7 @@ import iconAdd from 'assets/images/add-circle.svg';
 import iconDelete from 'assets/images/icon-delete.svg';
 
 interface CommonQuestionBoxProps {
-  questionDetail: QuestionDetailInterface;
+  questionDetail: any;
   handleAddQuestion?: (question: QuestionDetailInterface) => void;
   handleRemoveQuestion?: (question: QuestionDetailInterface) => void;
   numberQuestion?: number;
@@ -36,7 +31,7 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
   return (
     <Row justify="center" className={styles.mainBox}>
       <div className={styles.actionQuestion}>
-        <div className={styles.typeQuestion}>{getQuestionTypeText(questionDetail.type)}</div>
+        <div className={styles.typeQuestion}>{getQuestionTypeText(questionDetail?.questionTypeId)}</div>
         {handleAddQuestion && (
           <Button
             block
@@ -63,8 +58,8 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
       </div>
       <div className={styles.contentQuestion}>{`${
         numberQuestion ? t('commonQuestionBox.numberQuestion', { number: numberQuestion }) : ''
-      } ${questionDetail.content}`}</div>
-      {questionDetail.type === QUESTION_TYPE.PICK_ONE && (
+      } ${questionDetail?.content}`}</div>
+      {questionDetail?.questionTypeId === QUESTION_TYPE.PICK_ONE && (
         <div className={styles.boxOption}>
           <div className={styles.textOption}>
             <span>{t('commonQuestionBox.pickOneOption')}</span>
@@ -75,13 +70,13 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
               [styles.listOptionExam]: typeShow === TYPE_SHOW_QUESTION_BOX.EXAM,
             })}
           >
-            {questionDetail.options.map((option: OptionQuestionDetailInterface, indexOption: number) => (
+            {questionDetail?.questionContents?.map((option: any, indexOption: number) => (
               <Col span={12} className={styles.detailOption}>
                 {typeShow === TYPE_SHOW_QUESTION_BOX.SEARCH && (
                   <div
                     className={classNames({
-                      [styles.trueOption]: option.type === OPTION_QUESTION_TYPE.TRUE,
-                      [styles.falseOption]: option.type === OPTION_QUESTION_TYPE.FALSE,
+                      [styles.trueOption]: option?.isRight,
+                      [styles.falseOption]: !option?.isRight,
                     })}
                   ></div>
                 )}
@@ -98,13 +93,13 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                     id={`question${numberQuestion}-option${indexOption}`}
                   />
                 )}
-                <div className={styles.contentOption}>{option.content}</div>
+                <div className={styles.contentOption}>{option?.answerContent}</div>
               </Col>
             ))}
           </div>
         </div>
       )}
-      {questionDetail.type === QUESTION_TYPE.MULTI_PICK && (
+      {questionDetail?.questionTypeId === QUESTION_TYPE.MULTI_PICK && (
         <div className={styles.boxOption}>
           <div className={styles.textOption}>
             <span>{t('commonQuestionBox.pickMultiOption')}</span>
@@ -115,13 +110,13 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
               [styles.listOptionExam]: typeShow === TYPE_SHOW_QUESTION_BOX.EXAM,
             })}
           >
-            {questionDetail.options.map((option: OptionQuestionDetailInterface, indexOption: number) => (
+            {questionDetail?.questionContents?.map((option: any, indexOption: number) => (
               <Col span={12} className={styles.detailOption}>
                 {typeShow === TYPE_SHOW_QUESTION_BOX.SEARCH && (
                   <div
                     className={classNames({
-                      [styles.trueOption]: option.type === OPTION_QUESTION_TYPE.TRUE,
-                      [styles.falseOption]: option.type === OPTION_QUESTION_TYPE.FALSE,
+                      [styles.trueOption]: option?.isRight,
+                      [styles.falseOption]: !option?.isRight,
                     })}
                   ></div>
                 )}
@@ -138,7 +133,7 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                     id={`question${numberQuestion}-option${indexOption}`}
                   />
                 )}
-                <div className={styles.contentOption}>{option.content}</div>
+                <div className={styles.contentOption}>{option?.answerContent}</div>
               </Col>
             ))}
           </div>

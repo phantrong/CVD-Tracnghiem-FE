@@ -22,8 +22,6 @@ import { deleteQuestion } from 'api/question';
 
 const { Option } = Select;
 
-const { confirm } = Modal;
-
 const defaultFilter: IFilterListQuestion = {
   status: undefined,
   group: undefined,
@@ -106,7 +104,7 @@ export default function MyQuestion() {
     deletePost({
       id: deleteQuestionId,
     });
-  }, [deleteQuestionId]);
+  }, [deleteQuestionId, deletePost]);
 
   const handleCancelModalDelete = () => {
     setIsModalDeleteVisible(false);

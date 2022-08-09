@@ -1,17 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Col, Form, Input, message, Modal, Row, Select, Upload } from 'antd';
+import { Button, Checkbox, Col, Form, FormInstance, Input, message, Modal, Row, Select, Spin, Upload } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import styles from './styles.module.scss';
 import SideNav from 'components/SideNav';
-import {
-  ERROR_RESPONSE,
-  EXAM_STATUS,
-  OPTION_QUESTION_TYPE,
-  OPTION_QUESTION_TYPE_FILL_TEXTBOX,
-  QUESTION_TYPE,
-  TYPE_IMAGE,
-} from 'contants/constants';
+import { ERROR_RESPONSE, EXAM_STATUS, TOKEN_CUSTOMER, TYPE_IMAGE } from 'contants/constants';
 import CommonQuestionBox from 'components/CommonQuestionBox';
 
 import iconSearch from 'assets/images/SearchFilled.svg';
@@ -20,63 +13,85 @@ import imageDefault from 'assets/images/image-default.svg';
 import { handleErrorMessage, validateSizeImg, validateTypeImg } from 'helper';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { createQuestion } from 'api/question';
-import { useMutation } from 'react-query';
+import { useIsFetching, useMutation, useQueryClient } from 'react-query';
 import { AxiosError } from 'axios';
-import { useGetListGradeExam, useGetListLevelExam, useGetListPublicExam, useGetListSubjectExam } from 'hooks/useExam';
+import {
+  useGetListAllQuestion,
+  useGetListGradeExam,
+  useGetListLevelExam,
+  useGetListPublicExam,
+  useGetListStatus,
+  useGetListStatusExam,
+  useGetListSubjectExam,
+} from 'hooks/useExam';
+import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
+import Cookies from 'js-cookie';
+import { uploadImageExam } from 'api/exam';
 
 const { Option } = Select;
 
-const defaultFilter: IFilterListQuestion = {
+const defaultFilter: any = {
   subject: undefined,
   grade: undefined,
   level: undefined,
   keyWord: '',
-  page: 1,
-  per_page: 10,
 };
 
 export default function CreateExam() {
   const { t } = useTranslation();
-
-  const [filter, setFilter] = useState<IFilterListQuestion>(defaultFilter);
+  const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
+  const queryClient = useQueryClient();
+  const isFetching = useIsFetching({
+    queryKey: GET_CUSTOMER_PROFILE,
+  });
+  const [form]: FormInstance<any>[] = Form.useForm();
+  const [profile, setProfile] = useState<any>();
+  const [filter, setFilter] = useState<any>(defaultFilter);
   const [isModalFindQuestion, setIsModalFindQuestion] = useState<boolean>(false);
-  const [listQuestionSelected, setListQuestionSelected] = useState<QuestionDetailInterface[]>([]);
+  const [listQuestionSelected, setListQuestionSelected] = useState<any[]>([]);
   const [avatarURL, setAvatarURL] = useState<string>(imageDefault);
-  const [fileAvatar, setFileAvatar] = useState<string>();
+  const [imageId, setImageId] = useState<number>(0);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
+  const [isMyQuestion, setIsMyQuestion] = useState<boolean>(false);
+  const [isLoadingAvatar, setIsLoadingAvatar] = useState<boolean>(false);
+  const [examSelectedIndex, setExamSelectedIndex] = useState<number>(0);
+  const [listQuestionForcus, setListQuestionFocus] = useState<any>([]);
+
+  const { mutate: uploadImage } = useMutation((params: any) => uploadImageExam(params), {
+    onSuccess: (response: any) => {
+      message.success('Upload ảnh thành công');
+      setAvatarURL(response.url);
+      setImageId(response.id);
+      setIsLoadingAvatar(false);
+    },
+    onError: (error) => {
+      handleErrorMessage(error);
+      setIsLoadingAvatar(false);
+    },
+  });
 
   const { mutate: postCreate } = useMutation((params: any) => createQuestion(params), {
     onSuccess: () => {
-      message.success(t('modalSignUp.signUpSuccess'));
+      message.success('Tạo bài thi thành công');
       setIsLoadingSubmit(false);
     },
     onError: (error) => {
       const errorMessage = error as AxiosError;
       if (errorMessage.response?.status === ERROR_RESPONSE) {
-        // form.setFields([
-        //   {
-        //     name: 'username',
-        //     errors: errorMessage.response?.data?.errors?.username
-        //       ? [errorMessage.response?.data?.errors?.username]
-        //       : [],
-        //   },
-        //   {
-        //     name: 'displayName',
-        //     errors: errorMessage.response?.data?.errors?.displayName
-        //       ? [errorMessage.response?.data?.errors?.displayName]
-        //       : [],
-        //   },
-        //   {
-        //     name: 'email',
-        //     errors: errorMessage.response?.data?.errors?.email ? [errorMessage.response?.data?.errors?.email] : [],
-        //   },
-        //   {
-        //     name: 'password',
-        //     errors: errorMessage.response?.data?.errors?.password
-        //       ? [errorMessage.response?.data?.errors?.password]
-        //       : [],
-        //   },
-        // ]);
+        form.setFields([
+          {
+            name: 'examName',
+            errors: errorMessage.response?.data?.errors?.name ? [errorMessage.response?.data?.errors?.name] : [],
+          },
+          {
+            name: 'gradeId',
+            errors: errorMessage.response?.data?.errors?.grade ? [errorMessage.response?.data?.errors?.grade] : [],
+          },
+          {
+            name: 'subjectId',
+            errors: errorMessage.response?.data?.errors?.subject ? [errorMessage.response?.data?.errors?.subject] : [],
+          },
+        ]);
         console.log(errorMessage);
       } else {
         handleErrorMessage(error);
@@ -85,113 +100,57 @@ export default function CreateExam() {
     },
   });
 
-  const {data: listExam, isLoading: isLoadingExam} = useGetListPublicExam({});
-  const {data: listSubject, isLoading: isLoadingSubject} = useGetListSubjectExam({});
-  const {data: listGrade, isLoading: isLoadingGrade} = useGetListGradeExam({});
-  const {data: listLevel, isLoading: isLoadingLevel} = useGetListLevelExam({});
+  const { data: listExam, isLoading: isLoadingExam } = useGetListPublicExam({
+    subjectId: {
+      equal: filter.subject,
+    },
+    gradeId: {
+      equal: filter.grade,
+    },
+    examLevelId: {
+      equal: filter.level,
+    },
+    search: filter.keyWord,
+  });
+  const { data: listSubject, isLoading: isLoadingSubject } = useGetListSubjectExam({});
+  const { data: listGrade, isLoading: isLoadingGrade } = useGetListGradeExam({});
+  const { data: listLevel, isLoading: isLoadingLevel } = useGetListLevelExam({});
+  const { data: listStatusExam, isLoading: isLoadingStatusExam } = useGetListStatusExam({});
+  const { data: listStatus, isLoading: isLoadingStatus } = useGetListStatus({});
 
-  console.log(listExam);
-  const isLoadingListQuetion = false;
-  const listQuestion: QuestionDetailInterface[] = [
+  const { data: listQuestion, isLoading: isLoadingQuestion } = useGetListAllQuestion(
     {
-      id: 1,
-      type: QUESTION_TYPE.PICK_ONE,
-      content: 'áhdkjahsdkjadjkashdklahd',
-      options: [
-        {
-          id: 11,
-          type: OPTION_QUESTION_TYPE.TRUE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 12,
-          type: OPTION_QUESTION_TYPE.FALSE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 13,
-          type: OPTION_QUESTION_TYPE.FALSE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 14,
-          type: OPTION_QUESTION_TYPE.FALSE,
-          content: 'ádasdsad',
-        },
-      ],
+      creatorId: {
+        equal: profile?.id,
+      },
+      statusId: {
+        equal: 1,
+      },
     },
-    {
-      id: 2,
-      type: QUESTION_TYPE.MULTI_PICK,
-      content: 'áhdkjahsdkjadjkashdklahd',
-      options: [
-        {
-          id: 11,
-          type: OPTION_QUESTION_TYPE.TRUE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 12,
-          type: OPTION_QUESTION_TYPE.FALSE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 13,
-          type: OPTION_QUESTION_TYPE.TRUE,
-          content: 'ádasdsad',
-        },
-        {
-          id: 14,
-          type: OPTION_QUESTION_TYPE.FALSE,
-          content: 'ádasdsad',
-        },
-      ],
-    },
-    {
-      id: 3,
-      type: QUESTION_TYPE.MULTI_PICK,
-      content: 'áhdkjahsdkjadjkashdklahd',
-      options: [
-        {
-          id: 11,
-          type: OPTION_QUESTION_TYPE_FILL_TEXTBOX.EXACTLY,
-          content: 'ádasdsad',
-        },
-        {
-          id: 12,
-          type: OPTION_QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
-          content: 'ádasdsad',
-        },
-        {
-          id: 13,
-          type: OPTION_QUESTION_TYPE_FILL_TEXTBOX.CONTAINS,
-          content: 'ádasdsad',
-        },
-      ],
-    },
-  ];
+    isMyQuestion
+  );
 
   const isLoadingQuetionsSelected = false;
   const questionsSelected: QuestionDetailInterface[] = [];
 
   const handleChangeAvatar = useCallback(
     (info: UploadChangeParam<any>) => {
+      setIsLoadingAvatar(true);
       if (!validateTypeImg(info.file.type, TYPE_IMAGE)) {
         message.error(t('myPageProfile.avatar.errorType'));
       } else if (!validateSizeImg(info.file.size)) {
         message.error(t('myPageProfile.avatar.errorSize'));
       } else {
-        setAvatarURL(URL.createObjectURL(info.file));
-        URL.revokeObjectURL(info.file);
-        setFileAvatar(info.file);
+        const formData: FormData = new FormData();
+        formData.append('file', info?.file);
+        uploadImage(formData);
       }
     },
-    [t]
+    [t, uploadImage]
   );
 
   const handleDeleteAvatar = () => {
     setAvatarURL(imageDefault);
-    setFileAvatar('');
   };
 
   const handleChangeSubject = useCallback(
@@ -240,10 +199,13 @@ export default function CreateExam() {
 
   const handleAddQuestion = useCallback(
     (question: QuestionDetailInterface) => {
-      let addQuestion = question;
-      addQuestion.uuid = new Date().toISOString();
-      setListQuestionSelected([...listQuestionSelected, question]);
-      message.success(t('createExam.addQuestionSuccess'));
+      let findQuestion = listQuestionSelected?.find((item: any) => item.id === question.id);
+      if (findQuestion) {
+        message.error('Câu hỏi đã tồn tại trong đề thi.');
+      } else {
+        setListQuestionSelected([...listQuestionSelected, question]);
+        message.success(t('createExam.addQuestionSuccess'));
+      }
     },
     [listQuestionSelected, t]
   );
@@ -252,7 +214,7 @@ export default function CreateExam() {
     (question: QuestionDetailInterface) => {
       setListQuestionSelected(() =>
         listQuestionSelected.filter((item: QuestionDetailInterface) => {
-          return item.uuid !== question.uuid;
+          return item.id !== question.id;
         })
       );
       message.success(t('createExam.removeQuestionSuccess'));
@@ -260,9 +222,59 @@ export default function CreateExam() {
     [listQuestionSelected, t]
   );
 
-  const handleSubmit = (payload: any) => {
-    console.log(payload);
+  const handleChangeIsMyQuestion = (e: any) => {
+    setIsMyQuestion(e.target.checked);
   };
+
+  const handleSubmit = useCallback(
+    (payload: any) => {
+      const examQuestionMappings = listQuestionSelected?.map((question: any) => {
+        return {
+          examId: 0,
+          questionId: question.id,
+          question: question,
+        };
+      });
+      const data = {
+        id: 0,
+        name: payload.examName,
+        subjectId: payload.subjectId,
+        examLevelId: payload.examLevelId,
+        statusId: payload.statusId,
+        creatorId: profile?.id,
+        gradeId: payload.gradeId,
+        examStatusId: payload.statusExamId,
+        imageId: imageId,
+        time: payload.examTime,
+        subject: listSubject?.find((subject: any) => subject.id === payload.subjectId),
+        examLevel: listLevel?.find((examLevel: any) => examLevel.id === payload.examLevelId),
+        status: listStatus?.find((status: any) => status.id === payload.statusId),
+        grade: listGrade?.find((grade: any) => grade.id === payload.gradeId),
+        examStatus: listStatusExam?.find((examStatus: any) => examStatus.id === examStatus.statusExamId),
+        examQuestionMappings: examQuestionMappings,
+      };
+      console.log(data);
+
+      postCreate(data);
+    },
+    [imageId, profile, listQuestionSelected, listGrade, listSubject, listLevel, listStatus, listStatusExam, postCreate]
+  );
+
+  useEffect(() => {
+    if (isFetching) return;
+    const profileResponse: any = queryClient.getQueryData([GET_CUSTOMER_PROFILE, isAuthenticated]);
+    setProfile(profileResponse);
+  }, [isFetching, queryClient, isAuthenticated]);
+
+  useEffect(() => {
+    if (isMyQuestion) {
+      setListQuestionFocus(listQuestion);
+    } else if (listExam && typeof listExam[examSelectedIndex] != 'undefined') {
+      setListQuestionFocus(listExam[examSelectedIndex]?.questions || []);
+    } else {
+      setListQuestionFocus([]);
+    }
+  }, [isMyQuestion, listQuestion, listExam, examSelectedIndex]);
 
   const optionSelectSubject = useMemo(() => {
     return listSubject?.map((subject: CategoryInterface) => (
@@ -288,9 +300,25 @@ export default function CreateExam() {
     ));
   }, [listLevel]);
 
+  const optionSelectStatus = useMemo(() => {
+    return listStatus?.map((status: GroupQuestionInterface) => (
+      <Option key={'status' + status.id} value={status.id}>
+        {status.name}
+      </Option>
+    ));
+  }, [listStatus]);
+
+  const optionSelectStatusExam = useMemo(() => {
+    return listStatusExam?.map((statusExam: GroupQuestionInterface) => (
+      <Option key={'statusExam' + statusExam.id} value={statusExam.id}>
+        {statusExam.name}
+      </Option>
+    ));
+  }, [listStatusExam]);
+
   const listExamShow = useMemo(() => {
-    return listExam?.map((exam: FindExamInterface) => (
-      <div className={styles.boxExam}>
+    return listExam?.map((exam: FindExamInterface, index: number) => (
+      <div className={styles.boxExam} onClick={() => setExamSelectedIndex(index)}>
         <img src={exam.image} alt="exam" />
         <div>{`${exam.name} (${exam.totalQuestion} câu hỏi)`}</div>
       </div>
@@ -298,13 +326,13 @@ export default function CreateExam() {
   }, [listExam]);
 
   const listQuestionShow = useMemo(() => {
-    return listQuestion.map((question: QuestionDetailInterface) => (
+    return listQuestionForcus?.map((question: QuestionDetailInterface) => (
       <CommonQuestionBox questionDetail={question} handleAddQuestion={() => handleAddQuestion(question)} />
     ));
-  }, [listQuestion, handleAddQuestion]);
+  }, [listQuestionForcus, handleAddQuestion]);
 
   const listQuestionSelectedShow = useMemo(() => {
-    return listQuestionSelected.map((question: QuestionDetailInterface) => (
+    return listQuestionSelected?.map((question: QuestionDetailInterface) => (
       <CommonQuestionBox questionDetail={question} handleRemoveQuestion={() => handleRemoveQuestion(question)} />
     ));
   }, [listQuestionSelected, handleRemoveQuestion]);
@@ -351,7 +379,7 @@ export default function CreateExam() {
                   accept=".jpg,.jpeg,.png,.heic,.jfif"
                   className={styles.uploadAvatar}
                 >
-                  <Button type="primary" htmlType="button" className={styles.btnUpload}>
+                  <Button type="primary" htmlType="button" className={styles.btnUpload} loading={isLoadingAvatar}>
                     {t('createExam.addImage')}
                   </Button>
                 </Upload>
@@ -368,27 +396,63 @@ export default function CreateExam() {
               </Col>
             </Row>
           </Row>
-          <Form onFinish={handleSubmit} className={styles.examForm}>
+          <Form form={form} onFinish={handleSubmit} className={styles.examForm}>
             <Form.Item labelCol={{ span: 24 }} name="examName" label={t('createExam.examName')} className={styles.form}>
               <Input className={styles.input} placeholder={t('createExam.examName')} />
+            </Form.Item>
+            <Form.Item labelCol={{ span: 24 }} name="examTime" label={'Thời gian thi (phút)'} className={styles.form}>
+              <Input type="number" className={styles.input} placeholder={'Thời gian thi (phút)'} />
+            </Form.Item>
+            <Form.Item labelCol={{ span: 24 }} label={'Chủ đề'} name="subjectId" className={styles.form}>
+              <Select className={styles.select} bordered={false} loading={isLoadingSubject} placeholder={'Chủ đề'}>
+                {optionSelectSubject}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label={'Lớp'}
+              name="gradeId"
+              className={styles.form}
+              // initialValue={EXAM_STATUS.DRAFT}
+            >
+              <Select className={styles.select} bordered={false} loading={isLoadingGrade} placeholder={'Lớp'}>
+                {optionSelectGrade}
+              </Select>
+            </Form.Item>
+            <Form.Item labelCol={{ span: 24 }} label={'Cấp độ'} name="examLevelId" className={styles.form}>
+              <Select className={styles.select} bordered={false} loading={isLoadingLevel} placeholder={'Cấp độ'}>
+                {optionSelectLevel}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label={'Trạng thái công bố'}
+              name="statusExamId"
+              className={styles.form}
+              initialValue={EXAM_STATUS.DRAFT}
+            >
+              <Select
+                placeholder={'Trạng thái công bố'}
+                className={styles.select}
+                loading={isLoadingStatusExam}
+                bordered={false}
+              >
+                {optionSelectStatusExam}
+              </Select>
             </Form.Item>
             <Form.Item
               labelCol={{ span: 24 }}
               label={t('createExam.examStatus')}
-              name="statusExam"
+              name="statusId"
               className={styles.form}
-              initialValue={EXAM_STATUS.DRAFT}
             >
-              <Select placeholder={t('createExam.examStatus')} className={styles.select} bordered={false}>
-                <Option value={EXAM_STATUS.DRAFT} key={'optionStatus' + EXAM_STATUS.DRAFT}>
-                  {t('createExam.draft')}
-                </Option>
-                <Option value={EXAM_STATUS.ACTIVE} key={'optionStatus' + EXAM_STATUS.ACTIVE}>
-                  {t('createExam.active')}
-                </Option>
-                <Option value={EXAM_STATUS.INACTIVE} key={'optionStatus' + EXAM_STATUS.INACTIVE}>
-                  {t('createExam.inactive')}
-                </Option>
+              <Select
+                placeholder={t('createExam.examStatus')}
+                className={styles.select}
+                loading={isLoadingStatus}
+                bordered={false}
+              >
+                {optionSelectStatus}
               </Select>
             </Form.Item>
             <Button block type="primary" htmlType="submit" className={styles.btnSubmit} loading={isLoadingSubmit}>
@@ -410,7 +474,7 @@ export default function CreateExam() {
             <Input
               className={styles.input}
               prefix={<img src={iconSearch} alt="search" />}
-              placeholder={t('common.find')}
+              placeholder={'Tìm kiếm đề thi'}
               value={filter.keyWord}
               onChange={(e) => handleChangeKeyWord(e.currentTarget.value)}
             />
@@ -438,22 +502,34 @@ export default function CreateExam() {
               className={styles.select}
               bordered={false}
               loading={isLoadingLevel}
-              placeholder={"Cấp độ"}
+              placeholder={'Cấp độ'}
               onChange={handleChangeLevel}
             >
               {optionSelectLevel}
             </Select>
+          </Col>
+          <Col span={24} className={styles.colCheckbox}>
+            <Checkbox onChange={handleChangeIsMyQuestion}>Chỉ lấy các câu hỏi của bạn</Checkbox>
           </Col>
           <Col span={8} className={styles.showExam}>
             <Col span={24} className={styles.showResultFindExam}>
               {t('createExam.showResultFindExam', { keyWord: filter.keyWord })}
             </Col>
             <Col span={24} className={styles.listExam}>
-              {listExamShow}
+              {isLoadingExam && <Spin />}
+              {!isLoadingExam && listExamShow}
+              {!isLoadingExam && !listExamShow?.length && <div className={styles.message}>Chưa có dữ liệu đề thi.</div>}
             </Col>
           </Col>
           <Col span={16} className={styles.showQuestion}>
-            {listQuestionShow}
+            {isLoadingQuestion && <Spin />}
+            {!isLoadingQuestion && listQuestionShow}
+            {!isLoadingQuestion && !listQuestionShow?.length && (
+              <div className={styles.message}>Chưa có dữ liệu câu hỏi.</div>
+            )}
+            {!isLoadingQuestion && !listQuestionShow?.length && !examSelectedIndex && !isMyQuestion && (
+              <div className={styles.message}>Vui lòng chọn đề thi hoặc tích vào "Chỉ lấy các câu hỏi của bạn".</div>
+            )}
           </Col>
         </Row>
       </Modal>
