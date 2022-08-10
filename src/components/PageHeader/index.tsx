@@ -15,6 +15,7 @@ import ForgotPassword from 'pages/ForgotPassword';
 import logoHeader from 'assets/images/logo-header.svg';
 import avatarImg from 'assets/images/profile.png';
 import questionImg from 'assets/images/question.png';
+import examHistoryImg from 'assets/images/history-exam.png';
 import examImg from 'assets/images/exam.png';
 import passwordImg from 'assets/images/password.png';
 import logoutImg from 'assets/images/logout.png';
@@ -108,12 +109,16 @@ export default function PageHeader() {
         &ensp;
         {t('common.examManagement')}
       </Menu.Item>
-      <Menu.Item key="4" onClick={() => navigate('/change-password')}>
+      <Menu.Item key="4" onClick={() => navigate('/exam-history')}>
+        <img className={styles.icon} height={24} width={24} src={examHistoryImg} alt="examhistory" />
+        &ensp;Lịch sử bài thi
+      </Menu.Item>
+      <Menu.Item key="5" onClick={() => navigate('/change-password')}>
         <img className={styles.icon} height={24} width={24} src={passwordImg} alt="changePassword" />
         &ensp;
         {t('common.changePassword')}
       </Menu.Item>
-      <Menu.Item key="5" onClick={handleLogout}>
+      <Menu.Item key="6" onClick={handleLogout}>
         <img className={styles.icon} height={24} width={24} src={logoutImg} alt="logout" />
         &ensp;{t('common.logout')}
       </Menu.Item>

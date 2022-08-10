@@ -77,7 +77,14 @@ export default function PreviewExam() {
               type="primary"
               htmlType="submit"
               className={styles.btnSubmit}
-              onClick={() => navigate('/exam-action/' + examDetail?.id)}
+              onClick={() =>
+                navigate('/exam-action/' + examDetail.id, {
+                  state: {
+                    startTime: new Date(),
+                    examDetail: examDetail,
+                  },
+                })
+              }
             >
               {t('previewExam.start').toUpperCase()}
             </Button>

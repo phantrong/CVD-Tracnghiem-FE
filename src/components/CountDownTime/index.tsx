@@ -1,21 +1,22 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, memo } from 'react';
 
 interface TimeProps {
-  startTime: number;
+  timeRemain: number;
+  setTimeRemain: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const CountDowntime = (props: TimeProps) => {
-  const [time, setTime] = useState<number>(props.startTime);
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time - hours * 3600) / 60);
-  const seconds = time - minutes * 60 - hours * 3600;
+  const { timeRemain, setTimeRemain } = props;
+  const hours = Math.floor(timeRemain / 3600);
+  const minutes = Math.floor((timeRemain - hours * 3600) / 60);
+  const seconds = timeRemain - minutes * 60 - hours * 3600;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime((time) => time - 1);
+      setTimeRemain((time) => (time > 0 ? time - 1 : 0));
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [setTimeRemain]);
 
   return (
     <>

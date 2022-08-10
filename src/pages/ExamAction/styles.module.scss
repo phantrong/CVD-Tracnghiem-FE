@@ -112,6 +112,73 @@
     }
 }
 
+.modalSuccess {
+    width: 450px !important;
+     :global(.ant-modal-body) {
+        text-align: center;
+        padding: 30px;
+        font-size: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            .buttonCancel,
+            .buttonOk {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                padding: 16px;
+                border-radius: 10px;
+                height: 45px;
+                width: 40%;
+                font-weight: 700;
+                &:hover {
+                    -ms-transform: scale(1.05);
+                    -webkit-transform: scale(1.05);
+                    transform: scale(1.05);
+                }
+            }
+            .buttonOk {
+                background-color: #7a6a56;
+                border-color: #7a6a56;
+                color: white;
+            }
+            .buttonCancel {
+                background-color: white;
+                border-color: #7a6a56;
+                color: #7a6a56;
+            }
+        }
+    }
+     :global(.ant-modal-content) {
+        border-radius: 15px;
+        z-index: 1 !important;
+    }
+     :global(.ant-modal-footer) {
+        border: none;
+        padding: 0px 16px 30px 16px;
+        display: flex;
+        justify-content: space-around;
+         :global {
+            .ant-btn-default,
+            .ant-btn-primary {}
+        }
+    }
+}
+
 @media only screen and (max-width: 767px) {
     .examAction {
         margin: 0;
