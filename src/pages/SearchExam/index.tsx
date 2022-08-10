@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Col, Input, Pagination, Row, Select, Spin } from 'antd';
 import styles from './styles.module.scss';
@@ -28,22 +28,34 @@ export default function SearchExam() {
   const { t } = useTranslation();
   const { state }: any = useLocation();
   const navigate = useNavigate();
+ 
+  
   const [keyWord, setKeyWord] = useState<string>(state?.keyWord);
   const [categorySelected, setCategorySelected] = useState<number>();
   const [sortBy, setSortBy] = useState<string>(SORT_BY.NEW);
   const [page, setPage] = useState<number>(1);
   const listCategory: CategoryInterface[] = useGetCategory();
 
-  const [bodyListExam, setBodyListExam] = useState<IBodyListExam>({take: 10, skip: 1, orderBy: 50, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC})
+  const [bodyListExam, setBodyListExam] = useState<IBodyListExam>({take: 10, skip: 0, orderBy: 50, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC})
 
-  const listExams = useGetListExam(bodyListExam);
+  const {data: listExams, isLoading} = useGetListExam(bodyListExam);
 
-  console.log(listExams, 'listExamslistExams');
-  
 
+  useEffect(() => {
+    if(!isLoading) {
+      setIsloadSortBy(false);
+    }
+  },[isLoading]);
+
+  useEffect(() => {
+    if(listCategory) {
+      setCategorySelected(state?.categoryId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[listCategory])
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
-  const isLoadingListCategory = false;
+  const [isLoadingSortBy, setIsloadSortBy] = useState<boolean>(false);
 
 
   const isLoadingExam = false;
@@ -56,8 +68,10 @@ export default function SearchExam() {
     setSortBy(value);
   };
 
+
   const handleChangePage = (value: number) => {
     setPage(value);
+    setIsloadSortBy(true);
   };
 
   const listExamBox = useMemo(
@@ -86,7 +100,7 @@ export default function SearchExam() {
                 type="primary"
                 htmlType="button"
                 className={styles.btnExam}
-                onClick={() => navigate('/exam/preview')}
+                onClick={() => navigate(`/exam/preview/${exam.id}`)}
               >
                 {t('searchExam.examNow').toUpperCase()}
               </Button>
@@ -105,29 +119,25 @@ export default function SearchExam() {
     ));
   }, [categorySelected, listCategory]);
 
-  const { mutate: searchTest } = useMutation(
-    async (body: IBodySearchTest) => {
-      return sendPost('rpc/tracnghiem/exam/public-list', body)
-    },
-    {
-      onSuccess: (response: any) => {
-        
-      },
-      onError: (error) => {
-       
-      },
-    }
-  );
   
   const handleSearchTestByEnter = (e?: React.KeyboardEvent<HTMLInputElement>) =>  {
     if(e?.keyCode === 13) {
-      searchTest({subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord})
+      setBodyListExam({...bodyListExam, subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord })
     }
   };
 
   const handleSearchByButton = () => {
-    searchTest({subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord})
+    setBodyListExam({...bodyListExam, subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord })
   }
+
+  useEffect(() => {
+    setBodyListExam({...bodyListExam, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[sortBy]);
+
+  useEffect(() => {
+    window.history.replaceState({}, document.title)
+  }, []);
 
   return (
     <div className={styles.searchExam}>
@@ -150,8 +160,9 @@ export default function SearchExam() {
               className={styles.select}
               bordered={false}
               onChange={handleChangeCategory}
-              loading={isLoadingListCategory}
+              // loading={isLoadingListCategory}
               placeholder={t('searchExam.category')}
+              allowClear
             >
               {optionSelectCategory}
             </Select> 
@@ -178,7 +189,7 @@ export default function SearchExam() {
                   className={styles.select}
                   bordered={false}
                   onChange={handleChangeSortBy}
-                  loading={isLoadingListCategory}
+                  loading={isLoadingSortBy}
                   placeholder={t('searchExam.category')}
                 >
                   <Option key="sortByNew" value={SORT_BY.NEW} selected={SORT_BY.NEW === sortBy}>

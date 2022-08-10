@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { Menu, Dropdown, Button, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,8 @@ import questionImg from 'assets/images/question.png';
 import examImg from 'assets/images/exam.png';
 import passwordImg from 'assets/images/password.png';
 import logoutImg from 'assets/images/logout.png';
+import EnterOtp from 'pages/EnterOtp';
+import ResetPass from 'pages/ResetPass';
 
 const { confirm } = Modal;
 
@@ -29,6 +31,10 @@ export default function PageHeader() {
   const [isModalLoginVisible, setIsModalLoginVisible] = useState<boolean>(false);
   const [isModalSignUpVisible, setIsModalSignUpVisible] = useState<boolean>(false);
   const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);  
+  const [visibleOtp, setVisibleOtp] = useState<boolean>(false);
+
+  const [visibleReset, setVisibleReset] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('');  
 
   const handleLogout = useCallback(() => {
     if (!isAuthenticated) return;
@@ -80,6 +86,11 @@ export default function PageHeader() {
     setIsModalSignUpVisible(false);
     setIsModalForgotPasswordVisible(true);
   }, [isAuthenticated]);
+
+  const handleShowResetPass = (value: boolean) => {
+    setVisibleOtp(false);
+    setVisibleReset(value);
+  }
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>
@@ -176,7 +187,29 @@ export default function PageHeader() {
         centered={true}
         footer={false}
       >
-        <ForgotPassword handleShowLogin={handleShowLogin} />
+        <ForgotPassword setEmail={setEmail} handleShowLogin={handleShowLogin} onSetVisible={{setVisibleOtp, setVisibleForGot: setIsModalForgotPasswordVisible}}/>
+      </Modal>
+
+      <Modal
+        className={styles.modalSignUp}
+        visible={visibleOtp}
+        onCancel={() => setVisibleOtp(false)}
+        closable={false}
+        centered={true}
+        footer={false}
+      >
+        <EnterOtp email={email} handleShowResetPass={handleShowResetPass} />
+      </Modal>
+
+      <Modal
+        className={styles.modalSignUp}
+        visible={visibleReset}
+        onCancel={() => setVisibleReset(false)}
+        closable={false}
+        centered={true}
+        footer={false}
+      >
+        <ResetPass handleShowResetPass={handleShowResetPass} />
       </Modal>
     </div>
   );

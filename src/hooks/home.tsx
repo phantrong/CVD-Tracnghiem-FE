@@ -38,13 +38,13 @@ export interface IBodyListExam {
   take?: number;
 }
 export const useGetListExam = (body: IBodyListExam) => {
-  const { data } = useQuery(
-    [GET_LIST_EXAM],
+  const { data, isLoading } = useQuery(
+    [GET_LIST_EXAM, body],
     async () => {
       const response = await sendPost('rpc/tracnghiem/public-exam/list', body);
       return response;
     },
   );
-  return data;
+  return {data, isLoading};
 };
 
