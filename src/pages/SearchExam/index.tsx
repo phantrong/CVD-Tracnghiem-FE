@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Col, Input, Pagination, Row, Select, Spin } from 'antd';
 import styles from './styles.module.scss';
@@ -8,6 +8,14 @@ import filterIcon from 'assets/images/filter.svg';
 import iconSearch from 'assets/images/SearchFilled.svg';
 import iconQuestion from 'assets/images/question.svg';
 import iconPeople from 'assets/images/people.svg';
+import { ESort, IBodyListExam, useGetCategory, useGetListExam } from 'hooks/home';
+import { useMutation } from 'react-query';
+import { sendPost } from 'api/axios';
+
+interface IBodySearchTest {
+  subjectId?: {equal: number};
+  search?: string;
+}
 
 const { Option } = Select;
 
@@ -24,234 +32,21 @@ export default function SearchExam() {
   const [categorySelected, setCategorySelected] = useState<number>();
   const [sortBy, setSortBy] = useState<string>(SORT_BY.NEW);
   const [page, setPage] = useState<number>(1);
+  const listCategory: CategoryInterface[] = useGetCategory();
+
+  const [bodyListExam, setBodyListExam] = useState<IBodyListExam>({take: 10, skip: 1, orderBy: 50, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC})
+
+  const listExams = useGetListExam(bodyListExam);
+
+  console.log(listExams, 'listExamslistExams');
+  
 
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
   const isLoadingListCategory = false;
-  const listCategory: CategoryInterface[] = [
-    {
-      id: 1,
-      name: 'Tin học',
-    },
-    {
-      id: 2,
-      name: 'Tin học',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-    },
-    {
-      id: 4,
-      name: 'Tin học',
-    },
-    {
-      id: 5,
-      name: 'Tin học',
-    },
-  ];
+
 
   const isLoadingExam = false;
-  const listExam = [
-    {
-      id: 1,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 2,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Trắc Nghiệm Địa Lí 12 Bảo Vệ Môi Trường Và Phòng Chống Thiên Tai',
-      countQuestion: 40,
-      countExam: 400,
-      subjects: [
-        {
-          id: 1,
-          name: 'Lịch sử',
-        },
-        {
-          id: 2,
-          name: 'Địa lý',
-        },
-        {
-          id: 3,
-          name: 'Giáo dục công dân',
-        },
-      ],
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-  ];
 
   const handleChangeCategory = (value: number) => {
     setCategorySelected(value);
@@ -267,24 +62,24 @@ export default function SearchExam() {
 
   const listExamBox = useMemo(
     () =>
-      listExam?.map((exam: ExamInterface) => (
+    listExams?.map((exam: ExamInterface) => (
         <div className={styles.boxExam}>
-          <img src={exam.image} className={styles.imageExam} alt="Exam" />
+          <img src={exam?.image?.url} className={styles.imageExam} alt="Exam" />
           <div className={styles.infoExam}>
             <div className={styles.listCategory}>
-              {exam?.subjects?.map((category: CategoryInterface) => (
-                <div className={styles.category}>{category.name}</div>
-              ))}
+              {/* {exam?.subjects?.map((category: CategoryInterface) => ( */}
+                <div className={styles.category}>{exam?.subject?.name}</div>
+              {/* // ))} */}
             </div>
             <div className={styles.nameExam}>{exam.name}</div>
             <div className={styles.countInfoExam}>
               <div className={styles.countInfo}>
                 <img src={iconQuestion} className={styles.imageExam} alt="countQuestion" />{' '}
-                {t('searchExam.countQuestion', { count: exam.countQuestion })}
+                {t('searchExam.countQuestion', { count: exam.totalQuestion })}
               </div>
               <div className={styles.countInfo}>
                 <img src={iconPeople} className={styles.imageExam} alt="countExam" />{' '}
-                {t('searchExam.countExam', { count: exam.countExam })}
+                {t('searchExam.countExam', { count: exam.totalNumberTest })}
               </div>
               <Button
                 block
@@ -299,16 +94,40 @@ export default function SearchExam() {
           </div>
         </div>
       )),
-    [listExam, t]
+    [listExams, t]
   );
 
   const optionSelectCategory = useMemo(() => {
-    return listCategory.map((category: CategoryInterface) => (
+    return listCategory?.map((category: CategoryInterface) => (
       <Option key={'category' + category.id} value={category.id} selected={category.id === categorySelected}>
         {category.name}
       </Option>
     ));
   }, [categorySelected, listCategory]);
+
+  const { mutate: searchTest } = useMutation(
+    async (body: IBodySearchTest) => {
+      return sendPost('rpc/tracnghiem/exam/public-list', body)
+    },
+    {
+      onSuccess: (response: any) => {
+        
+      },
+      onError: (error) => {
+       
+      },
+    }
+  );
+  
+  const handleSearchTestByEnter = (e?: React.KeyboardEvent<HTMLInputElement>) =>  {
+    if(e?.keyCode === 13) {
+      searchTest({subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord})
+    }
+  };
+
+  const handleSearchByButton = () => {
+    searchTest({subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord})
+  }
 
   return (
     <div className={styles.searchExam}>
@@ -324,6 +143,7 @@ export default function SearchExam() {
               placeholder={t('home.findTest')}
               value={keyWord}
               onChange={(e) => setKeyWord(e.currentTarget.value)}
+              onKeyDown={handleSearchTestByEnter}
             />
             <Select
               value={categorySelected}
@@ -334,8 +154,8 @@ export default function SearchExam() {
               placeholder={t('searchExam.category')}
             >
               {optionSelectCategory}
-            </Select>
-            <Button block type="primary" htmlType="button" className={styles.btnFind}>
+            </Select> 
+            <Button block type="primary" onClick={handleSearchByButton} htmlType="button" className={styles.btnFind}>
               {t('common.find').toUpperCase()}
             </Button>
           </div>

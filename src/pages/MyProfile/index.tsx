@@ -1,79 +1,91 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Row, Col, Form, Input, FormInstance, Select, Upload, message, Modal } from 'antd';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Row, Col, Form, Input, FormInstance, Upload, message, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { RuleObject } from 'antd/lib/form';
 import Cookies from 'js-cookie';
-import { useMutation, useQueryClient, useIsFetching } from 'react-query';
+import { useQueryClient, useIsFetching, useMutation } from 'react-query';
 import { UploadChangeParam } from 'antd/lib/upload/interface';
-import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 
 import styles from './style.module.scss';
-import { updateProfile } from 'api/profile';
-import {validateSizeImg,validateTypeImg,  handleErrorMessage, compressionHeicImageFile, trimSpaceInput } from 'helper';
+import {validateSizeImg,validateTypeImg,  compressionHeicImageFile, trimSpaceInput, handleErrorMessage } from 'helper';
 import SideNav from 'components/SideNav';
 
 import AvatarDefault from '../../assets/images/avatar-default.svg';
 import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
-import { TOKEN_CUSTOMER, TYPE_IMAGE } from 'contants/constants';
+import { ERROR_RESPONSE, TOKEN_CUSTOMER, TYPE_IMAGE } from 'contants/constants';
+import { sendPost } from 'api/axios';
+import { AxiosError } from 'axios';
 
 interface IDataResponseprofile {
   message: string;
   success: boolean;
 }
 
-const { Option } = Select;
-const { confirm } = Modal;
+interface IBodyUpdateProfile {
+  displayName?: string;
+  imageId?: number;
+}
 
 export default function MyPageProfile() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
   const queryClient = useQueryClient();
   const isFetching = useIsFetching({
     queryKey: GET_CUSTOMER_PROFILE,
   });
   const [profile, setProfile] = useState<any>();
-  const [profileForm, setProfileForm] = useState<any>({
-    name: profile?.name || ''
-  });
+
   const [form]: FormInstance<any>[] = Form.useForm();
   const [isLoadingBtnSubmitProfile, setIsLoadingBtnSubmitProfile] = useState<boolean>(false);
   const [isLoadingAvatar, setIsLoadingAvatar] = useState<boolean>(false);
   const [avatarURL, setAvatarURL] = useState<string>(AvatarDefault);
-  const [fileAvatar, setFileAvatar] = useState<string | Blob>();
+  const imageIdRef = useRef<number | undefined>(undefined);
 
-  // const { mutate: postUpdateProfile } = useMutation((params: FormData) => updateProfile(params), {
-  //   onSuccess: (response: IDataResponseprofile) => {
-  //     if (response.success) {
-  //       message.success(t('myPageProfile.msgSuccessSubmit'));
-  //     }
-  //     setIsLoadingBtnSubmitProfile(false);
-  //     queryClient.refetchQueries(GET_PROFILE_USER);
-  //   },
-  //   onError: (error) => {
-  //     handleErrorMessage(error);
-  //     setIsLoadingBtnSubmitProfile(false);
-  //   },
-  // });
-
-  const handleChangeAvatar = useCallback(
-    (info: UploadChangeParam<any>) => {
-      setIsLoadingAvatar(true);
-      if (!validateTypeImg(info.file.type, TYPE_IMAGE)) {
-        message.error(t('myPageProfile.avatar.errorType'));
-      } else if (!validateSizeImg(info.file.size)) {
-        message.error(t('myPageProfile.avatar.errorSize'));
-      } else {
-        compressionHeicImageFile(info, setAvatarURL, setFileAvatar, setIsLoadingAvatar);
-      }
+  const { mutate: postUpdateProfile } = useMutation(async (body: IBodyUpdateProfile) => {
+    return sendPost('rpc/tracnghiem/profile/update-limit', body);
+  }, {
+    onSuccess: (response: IDataResponseprofile) => {
+     message.success('Cập nhật thành công!');
+     setIsLoadingBtnSubmitProfile(false);
+     queryClient.refetchQueries([GET_CUSTOMER_PROFILE])
     },
-    [t]
-  );
+    onError: (error) => {
+      const errorMessage = error as AxiosError;
+      if (errorMessage.response?.status === ERROR_RESPONSE) {
+        form.setFields([
+          {
+            name: 'displayName',
+            errors: errorMessage.response?.data?.errors?.displayName
+              ? [errorMessage.response?.data?.errors?.displayName]
+              : [],
+          },
+        ]);
+      } else {
+        handleErrorMessage(error);
+      }
+      setIsLoadingBtnSubmitProfile(false);
+    },
+  });
+
+  const handleChangeAvatar = async (info: UploadChangeParam<any>) => {
+
+    const formData = new FormData();
+    formData.append('file', info?.file);
+    setIsLoadingAvatar(true);
+    sendPost('rpc/tracnghiem/profile/save-image', formData).then((res) => {
+      setAvatarURL(res?.url);
+      imageIdRef.current = res?.id;
+      setIsLoadingAvatar(false);
+    })
+    .catch(err => {
+      setIsLoadingAvatar(false);
+      message.error(err?.response?.message);
+    })
+  }
 
   const handleDeleteAvatar = () => {
     setAvatarURL(AvatarDefault);
-    setFileAvatar('');
+    imageIdRef.current = undefined;
   };
 
   const handleTrimSpaceInput = (e: React.FocusEvent<HTMLInputElement, Element>) => {
@@ -82,40 +94,13 @@ export default function MyPageProfile() {
     });
   };
 
-  const handleClickBtnUpgradeShop = () => {
-    if (profile?.is_staff) {
-      confirm({
-        title: (
-          <div>
-            <div>{t('myPageProfile.isStaff')}</div>
-            <div>{t('myPageProfile.cantUpgradeShop')}</div>
-          </div>
-        ),
-        okText: t('common.confirmation'),
-        okCancel: false,
-        icon: <></>,
-        className: 'modal-confirm-normal',
-        centered: true,
-        okButtonProps: {
-          className: 'only-ok-btn',
-        },
-      });
-    } else {
-      navigate('/my-page/upgrade-shop');
-    }
-  };
 
   const handleSubmitForm = (payload: any) => {
     setIsLoadingBtnSubmitProfile(true);
-    const formData: FormData = new FormData();
-    formData.append('name', payload.name);
-    if (fileAvatar) {
-      formData.append('avatar', fileAvatar);
-    } else if (avatarURL === AvatarDefault) {
-      formData.append('avatar', '');
-    }
-    // postUpdateProfile(formData);
-    console.log(formData);
+
+    const displayName = form?.getFieldValue('displayName');
+
+    postUpdateProfile({displayName,imageId: imageIdRef.current })
 
   };
 
@@ -130,34 +115,30 @@ export default function MyPageProfile() {
 
   useEffect(() => {
     if (profile) {
-      setProfileForm({
-        name: profile?.name || '',
-      });
-      setAvatarURL(profile?.avatar || AvatarDefault);
+      form?.setFieldsValue({username: profile?.username, displayName: profile?.displayName, email: profile?.email});
+      setAvatarURL(profile?.image?.url || AvatarDefault);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
 
-  useEffect(() => {
-    form.resetFields();
-  }, [profileForm, form]);
 
   return (
     <div className={styles.myPageProfile}>
       <SideNav />
       <Row justify="space-between" align="bottom" className={styles.title}>
-        <h2>{t('myPageProfile.titlePage')}</h2>
+        <h2>{'Thông tin cá nhân'}</h2>
       </Row>
       <Form
         className={styles.formProfile}
         form={form}
-        initialValues={profileForm}
+        // initialValues={profileForm}
         onFinish={handleSubmitForm}
         scrollToFirstError={true}
       >
         <Row className={styles.rowForm}>
           <Col xs={24} sm={24} md={8} lg={8} xl={8} className={styles.colAvatar}>
             <h3>
-              <strong>{t('myPageProfile.avatar.title')}</strong>
+              <strong>{'Ảnh đại diện'}</strong>
             </h3>
             <Row className={styles.rowUploadAvatar}>
               <img src={avatarURL} className={styles.avatar} alt="Avatar" />
@@ -176,7 +157,7 @@ export default function MyPageProfile() {
                     className={styles.uploadAvatar}
                   >
                     <Button type="primary" htmlType="button" className={styles.btnUpload} loading={isLoadingAvatar}>
-                      {t('myPageProfile.avatar.btnUpload')}
+                      {'Chọn ảnh'}
                     </Button>
                   </Upload>
                 </Col>
@@ -187,29 +168,67 @@ export default function MyPageProfile() {
                     className={styles.btnDeleteAvatar}
                     onClick={handleDeleteAvatar}
                   >
-                    {t('myPageProfile.avatar.btnDelete')}
+                    {'Xóa ảnh'}
                   </Button>
                 </Col>
               </Row>
-              <div className={styles.textValidate}>{t('myPageProfile.avatar.textMb')}</div>
-              <div className={styles.textValidate}>{t('myPageProfile.avatar.textType')}</div>
+              {/* <div className={styles.textValidate}>{t('myPageProfile.avatar.textMb')}</div>
+              <div className={styles.textValidate}>{t('myPageProfile.avatar.textType')}</div> */}
             </Row>
           </Col>
+
           <Col xs={24} sm={24} md={16} lg={16} xl={16} className={styles.colFormProfile}>
             <Row className={styles.rowName}>
-                <Form.Item
-                  labelCol={{ span: 24 }}
-                  className={styles.inputFormProfile}
-                  colon={false}
-                  name="name"
-                >
-                  <Input
-                    placeholder={t('signUp.form.placeholderLastName')}
-                    className={styles.inputProfile}
-                    name="name"
-                    onBlur={handleTrimSpaceInput}
-                  />
-                </Form.Item>
+                <Col span={12}>
+                  <Form.Item
+                    labelCol={{ span: 24 }}
+                    className={styles.inputFormProfile}
+                    colon={false}
+                    name="displayName"
+                    label="Tên người dùng"
+                  >
+                    <Input
+                      placeholder={'Nhập thông tin người dùng'}
+                      className={styles.inputProfile}
+                      name="displayName"
+                      onBlur={handleTrimSpaceInput}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    labelCol={{ span: 24 }}
+                    className={styles.inputFormProfile}
+                    colon={false}
+                    name="username"
+                    label="Username"
+                  >
+                    <Input
+                      disabled={true}
+                      className={styles.inputProfile}
+                      name="username"
+                      onBlur={handleTrimSpaceInput}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={12}>
+                  <Form.Item
+                    labelCol={{ span: 24 }}
+                    className={styles.inputFormProfile}
+                    colon={false}
+                    name="email"
+                    label="Email"
+                  >
+                    <Input
+                      disabled={true}
+                      className={styles.inputProfile}
+                      name="email"
+                      onBlur={handleTrimSpaceInput}
+                    />
+                  </Form.Item>
+                </Col>
             </Row>
           </Col>
         </Row>
@@ -222,7 +241,7 @@ export default function MyPageProfile() {
                 className={styles.btnSubmitProfile}
                 loading={isLoadingBtnSubmitProfile}
               >
-                {t('myPageProfile.btnSubmit')}
+                {'Lưu thông tin'}
               </Button>
             </Form.Item>
           </Col>

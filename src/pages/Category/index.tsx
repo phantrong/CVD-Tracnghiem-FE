@@ -4,52 +4,21 @@ import styles from './styles.module.scss';
 import { useTranslation } from 'react-i18next';
 
 import countTest from 'assets/images/countTest.svg';
+import { useGetSingleSubject } from 'hooks/home';
+
+const imageDefault = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png';
 
 export default function Category() {
   const { t } = useTranslation();
   const gutter: number = 30;
   const backgroundCategory = ['#E5F7F8', '#FEF7E8', '#FEE6ED', '#F5FCEC'];
 
+  const listCategory = useGetSingleSubject();
+  
+
   // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
 
   const isLoadingCategory = false;
-  const listCategory = [
-    {
-      id: 1,
-      name: 'Tin học',
-      countTest: 999,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 2,
-      name: 'Tin học',
-      countTest: 999,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-      countTest: 999,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-      countTest: 999,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-    {
-      id: 3,
-      name: 'Tin học',
-      countTest: 999,
-      image:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/800px-Image_created_with_a_mobile_phone.png',
-    },
-  ];
 
   const listCategoryBox = useMemo(
     () =>
@@ -59,11 +28,11 @@ export default function Category() {
             className={styles.boxCategory}
             style={{ backgroundColor: `${backgroundCategory[Math.floor(Math.random() * backgroundCategory.length)]}` }}
           >
-            <img src={category.image} className={styles.imageCategory} alt="category" />
+            <img src={category?.avatar || imageDefault} className={styles.imageCategory} alt="category" />
             <div className={styles.infoCategory}>
               <div className={styles.nameCategory}>{category.name}</div>
               <div className={styles.countTestCategory}>
-                <img src={countTest} alt="category" /> {category.countTest} {t('category.test')}
+                <img src={countTest} alt="category" /> {category.totalExam} {t('category.test')}
               </div>
             </div>
           </div>
