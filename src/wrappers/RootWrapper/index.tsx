@@ -26,7 +26,7 @@ export default function AppWrapper() {
           <Route path="/" element={<Home />} />
           <Route path="/category" element={<Category />} />
           <Route path="/search-exam" element={<SearchExam />} />
-          <Route path="/exam/preview" element={<PreviewExam />} />
+          <Route path="/exam/preview/:id" element={<PreviewExam />} />
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/profile" element={<MyProfile />} />
             <Route path="/question" element={<MyQuestion />} />
@@ -34,7 +34,7 @@ export default function AppWrapper() {
             <Route path="/exam/create" element={<CreateExam />} />
             <Route path="/exam/edit/:id" element={<EditExam />} />
             <Route path="/change-password" element={<ChangePassword />} />
-            <Route path="/exam-action" element={<ExamAction />} />
+            <Route path="/exam-action/:id" element={<ExamAction />} />
           </Route>
         </Route>
       </Routes>
