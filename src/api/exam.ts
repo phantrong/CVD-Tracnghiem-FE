@@ -10,3 +10,4 @@ export const getListStatus = (params: any) => sendPost('/rpc/tracnghiem/exam/sin
 export const uploadImageExam = (params: any) => sendPost('/rpc/tracnghiem/exam/upload-image', params);
 export const getListAllQuestion = (params: any) => sendPost('/rpc/tracnghiem/exam/list-question', params);
 export const getMyListExam = (params: any) => sendPost('/rpc/tracnghiem/exam/list', params);
+export const createExam = (params: any) => sendPost('/rpc/tracnghiem/exam/create', params);

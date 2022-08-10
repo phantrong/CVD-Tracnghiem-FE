@@ -12,7 +12,6 @@ import iconAdd from 'assets/images/add-white.svg';
 import imageDefault from 'assets/images/image-default.svg';
 import { handleErrorMessage, validateSizeImg, validateTypeImg } from 'helper';
 import { UploadChangeParam } from 'antd/lib/upload';
-import { createQuestion } from 'api/question';
 import { useIsFetching, useMutation, useQueryClient } from 'react-query';
 import { AxiosError } from 'axios';
 import {
@@ -26,7 +25,8 @@ import {
 } from 'hooks/useExam';
 import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
 import Cookies from 'js-cookie';
-import { uploadImageExam } from 'api/exam';
+import { createExam, uploadImageExam } from 'api/exam';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -39,6 +39,7 @@ const defaultFilter: any = {
 
 export default function CreateExam() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
   const queryClient = useQueryClient();
   const isFetching = useIsFetching({
@@ -59,7 +60,7 @@ export default function CreateExam() {
 
   const { mutate: uploadImage } = useMutation((params: any) => uploadImageExam(params), {
     onSuccess: (response: any) => {
-      message.success('Upload ảnh thành công');
+      message.success('Upload ảnh thành công.');
       setAvatarURL(response.url);
       setImageId(response.id);
       setIsLoadingAvatar(false);
@@ -70,10 +71,11 @@ export default function CreateExam() {
     },
   });
 
-  const { mutate: postCreate } = useMutation((params: any) => createQuestion(params), {
+  const { mutate: postCreate } = useMutation((params: any) => createExam(params), {
     onSuccess: () => {
-      message.success('Tạo bài thi thành công');
+      message.success('Tạo bài thi thành công.');
       setIsLoadingSubmit(false);
+      navigate('/exam');
     },
     onError: (error) => {
       const errorMessage = error as AxiosError;
@@ -91,7 +93,20 @@ export default function CreateExam() {
             name: 'subjectId',
             errors: errorMessage.response?.data?.errors?.subject ? [errorMessage.response?.data?.errors?.subject] : [],
           },
+          {
+            name: 'examLevelId',
+            errors: errorMessage.response?.data?.errors?.examLevel
+              ? [errorMessage.response?.data?.errors?.examLevel]
+              : [],
+          },
+          {
+            name: 'statusId',
+            errors: errorMessage.response?.data?.errors?.status ? [errorMessage.response?.data?.errors?.status] : [],
+          },
         ]);
+        if (errorMessage.response?.data?.errors?.image) {
+          message.error('Vui lòng upload ảnh đề thi.');
+        }
         console.log(errorMessage);
       } else {
         handleErrorMessage(error);
@@ -228,6 +243,7 @@ export default function CreateExam() {
 
   const handleSubmit = useCallback(
     (payload: any) => {
+      setIsLoadingSubmit(true);
       const examQuestionMappings = listQuestionSelected?.map((question: any) => {
         return {
           examId: 0,
@@ -235,27 +251,30 @@ export default function CreateExam() {
           question: question,
         };
       });
-      const data = {
-        id: 0,
-        name: payload.examName,
-        subjectId: payload.subjectId,
-        examLevelId: payload.examLevelId,
-        statusId: payload.statusId,
-        creatorId: profile?.id,
-        gradeId: payload.gradeId,
-        examStatusId: payload.statusExamId,
-        imageId: imageId,
-        time: payload.examTime,
-        subject: listSubject?.find((subject: any) => subject.id === payload.subjectId),
-        examLevel: listLevel?.find((examLevel: any) => examLevel.id === payload.examLevelId),
-        status: listStatus?.find((status: any) => status.id === payload.statusId),
-        grade: listGrade?.find((grade: any) => grade.id === payload.gradeId),
-        examStatus: listStatusExam?.find((examStatus: any) => examStatus.id === examStatus.statusExamId),
-        examQuestionMappings: examQuestionMappings,
-      };
-      console.log(data);
-
-      postCreate(data);
+      if (listQuestionSelected.length < 1) {
+        message.error('Vui lòng chọn ít nhât 1 câu hỏi');
+        setIsLoadingSubmit(false);
+      } else {
+        const data = {
+          id: 0,
+          name: payload.examName,
+          subjectId: payload.subjectId,
+          examLevelId: payload.examLevelId,
+          statusId: payload.statusId,
+          creatorId: profile?.id,
+          gradeId: payload.gradeId,
+          examStatusId: payload.statusExamId,
+          imageId: imageId,
+          time: payload.examTime,
+          subject: listSubject?.find((subject: any) => subject.id === payload.subjectId),
+          examLevel: listLevel?.find((examLevel: any) => examLevel.id === payload.examLevelId),
+          status: listStatus?.find((status: any) => status.id === payload.statusId),
+          grade: listGrade?.find((grade: any) => grade.id === payload.gradeId),
+          examStatus: listStatusExam?.find((examStatus: any) => examStatus.id === examStatus.statusExamId),
+          examQuestionMappings: examQuestionMappings,
+        };
+        postCreate(data);
+      }
     },
     [imageId, profile, listQuestionSelected, listGrade, listSubject, listLevel, listStatus, listStatusExam, postCreate]
   );
