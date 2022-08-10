@@ -1,22 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './style.module.scss';
 import { Input, Button, Form, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { RuleObject } from 'antd/lib/form';
 import { handleErrorMessage } from 'helper';
-import { useMutation } from 'react-query';
+import { useIsFetching, useMutation, useQueryClient } from 'react-query';
 import { changePassword } from 'api/profile';
 import SideNav from 'components/SideNav';
+import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
 
 export default function ChangePassword() {
   const { t } = useTranslation();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
 
+  const queryClient = useQueryClient();
+  const isFetching = useIsFetching({
+    queryKey: GET_CUSTOMER_PROFILE,
+  });
+  const [profile, setProfile] = useState<any>();
+  
+  const [form] = Form.useForm();
+  
   const { mutate: postChangePassword } = useMutation(
     (params: ChangePasswordParamsInterface) => changePassword(params),
     {
       onSuccess: (response: any) => {
         console.log(response);
+        form.resetFields();
         setIsLoadingSubmit(false);
       },
       onError: (error) => {
@@ -28,14 +38,25 @@ export default function ChangePassword() {
 
   const handleSubmit = (payload: any) => {
     setIsLoadingSubmit(true);
+    
     const data: ChangePasswordParamsInterface = {
       oldPassword: payload.oldPassword,
       newPassword: payload.newPassword,
       confirmPassword: payload.confirmPassword,
+      id: profile?.id,
     };
 
     postChangePassword(data);
   };
+
+  useEffect(() => {
+    if (isFetching) return;
+    const profileResponse: any = queryClient.getQueryData([
+      GET_CUSTOMER_PROFILE,
+      true,
+    ]);
+    setProfile(profileResponse);
+  }, [isFetching, queryClient, true]);
 
   return (
     <div className={styles.changePassword}>
@@ -45,7 +66,7 @@ export default function ChangePassword() {
           <h2>{t('modalChangePassword.title')}</h2>
         </Col>
       </Row>
-      <Form onFinish={handleSubmit} className={styles.changePasswordForm}>
+      <Form onFinish={handleSubmit} form={form} className={styles.changePasswordForm}>
         <Form.Item
           label={t('modalChangePassword.oldPassword')}
           name="oldPassword"

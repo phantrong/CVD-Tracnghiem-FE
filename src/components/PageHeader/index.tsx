@@ -28,7 +28,7 @@ export default function PageHeader() {
   const profile: any = useCustomerProfile(isAuthenticated);
   const [isModalLoginVisible, setIsModalLoginVisible] = useState<boolean>(false);
   const [isModalSignUpVisible, setIsModalSignUpVisible] = useState<boolean>(false);
-  const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);
+  const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);  
 
   const handleLogout = useCallback(() => {
     if (!isAuthenticated) return;
@@ -84,7 +84,7 @@ export default function PageHeader() {
   const menu = (
     <Menu style={{ minWidth: 200 }}>
       <Menu.Item key="1" onClick={() => navigate('/profile')}>
-        <img className={styles.icon} height={24} width={24} src={avatarImg} alt="profile" />
+        <img className={styles.icon} height={24} width={24} src={profile?.image?.url || avatarImg} alt="profile" />
         &ensp;{t('common.profile')}
       </Menu.Item>
       <Menu.Item key="2" onClick={() => navigate('/question')}>
@@ -134,7 +134,7 @@ export default function PageHeader() {
             {!profile.isLoading && (
               <Dropdown overlay={menu} trigger={['click']}>
                 <div className={styles.dropdownToggle}>
-                  <img className={styles.icon} height={32} width={32} src={avatarImg} alt="avatar user" />
+                  <img className={styles.icon} height={32} width={32} src={profile?.image?.url || avatarImg} alt="avatar user" />
                   <span className={styles.userName}>{profile?.displayName}</span>
                 </div>
               </Dropdown>

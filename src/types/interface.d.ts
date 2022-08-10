@@ -35,8 +35,9 @@ declare interface QuestionInterface {
 declare interface CategoryInterface {
   id: number;
   name: string;
-  countTest?: number;
+  totalExam?: number;
   image?: string;
+  avatar?: string;
 }
 
 declare interface TypeQuestionInterface {
@@ -62,13 +63,13 @@ declare interface GroupQuestionInterface {
 declare interface ExamInterface {
   id: number;
   name: string;
-  countQuestion: number;
-  countExam: number;
-  subjects?: {
+  totalQuestion: number;
+  totalNumberTest: number;
+  subject?: {
     id: number;
     name: string;
-  }[];
-  image?: string;
+  };
+  image?: {url?: string};
   time?: number | null;
 }
 
@@ -107,6 +108,7 @@ declare interface ChangePasswordParamsInterface {
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
+  id: number;
 }
 
 declare interface ForgotPasswordParamsInterface {
