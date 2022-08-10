@@ -13,7 +13,13 @@ import iconInactive from 'assets/images/inactive.svg';
 import { EXAM_STATUS, TOKEN_CUSTOMER } from 'contants/constants';
 import SideNav from 'components/SideNav';
 import { useNavigate } from 'react-router-dom';
-import { useGetListGradeExam, useGetListMyExam, useGetListStatusExam, useGetListSubjectExam } from 'hooks/useExam';
+import {
+  useGetCountMyExam,
+  useGetListGradeExam,
+  useGetListMyExam,
+  useGetListStatusExam,
+  useGetListSubjectExam,
+} from 'hooks/useExam';
 import { GET_CUSTOMER_PROFILE, GET_MY_LIST_EXAM } from 'contants/keyQuery';
 import Cookies from 'js-cookie';
 import { useIsFetching, useMutation, useQueryClient } from 'react-query';
@@ -61,6 +67,25 @@ export default function MyListExam() {
   });
 
   const { data: listExam, isLoading: isLoadingExam } = useGetListMyExam({
+    skip: (filter.page - 1) * 10,
+    take: 10,
+    creatorId: {
+      equal: profile?.id,
+    },
+    subjectId: {
+      equal: filter.subjectId,
+    },
+    examStatusId: {
+      equal: filter.examStatusId,
+    },
+    gradeId: {
+      equal: filter.gradeId,
+    },
+    name: {
+      contain: filter.keyWord,
+    },
+  });
+  const { data: countExams } = useGetCountMyExam({
     skip: (filter.page - 1) * 10,
     take: 10,
     creatorId: {
@@ -299,6 +324,7 @@ export default function MyListExam() {
               loading={isLoadingSubject}
               placeholder={t('questionForm.category')}
               onChange={handleChangeSubject}
+              allowClear
             >
               {optionSelectSubject}
             </Select>
@@ -308,6 +334,7 @@ export default function MyListExam() {
               loading={isLoadingGrade}
               placeholder={t('questionForm.grade')}
               onChange={handleChangeGrade}
+              allowClear
             >
               {optionSelectGrade}
             </Select>
@@ -317,6 +344,7 @@ export default function MyListExam() {
               loading={isLoadingStatusExam}
               placeholder={'Trạng thái công bố'}
               onChange={handleChangeExamStatus}
+              allowClear
             >
               {optionSelectStatusExam}
             </Select>
@@ -350,16 +378,15 @@ export default function MyListExam() {
       {!isLoadingExam && (
         <Col span={24} className={styles.colPagination}>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className={styles.textPagination}>
-            <strong>
-              {t('myListExam.showCount', {
-                total: 100,
-                from: 1,
-                to: 10,
-              })}
-            </strong>
+            <strong>Tổng số lượng: {countExams}</strong>
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className={styles.pagination}>
-            <Pagination onChange={handleChangePage} total={100} current={filter.page} pageSize={filter.per_page} />
+            <Pagination
+              onChange={handleChangePage}
+              total={countExams}
+              current={filter.page}
+              pageSize={filter.per_page}
+            />
           </Col>
         </Col>
       )}

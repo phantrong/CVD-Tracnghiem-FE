@@ -1,18 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Row, Col, Form, Input, FormInstance, Upload, message, Modal } from 'antd';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Row, Col, Form, Input, FormInstance, Upload, message } from 'antd';
 import Cookies from 'js-cookie';
 import { useQueryClient, useIsFetching, useMutation } from 'react-query';
 import { UploadChangeParam } from 'antd/lib/upload/interface';
-import { useNavigate } from 'react-router-dom';
 
 import styles from './style.module.scss';
-import {validateSizeImg,validateTypeImg,  compressionHeicImageFile, trimSpaceInput, handleErrorMessage } from 'helper';
+import { trimSpaceInput, handleErrorMessage } from 'helper';
 import SideNav from 'components/SideNav';
 
 import AvatarDefault from '../../assets/images/avatar-default.svg';
 import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
-import { ERROR_RESPONSE, TOKEN_CUSTOMER, TYPE_IMAGE } from 'contants/constants';
+import { ERROR_RESPONSE, TOKEN_CUSTOMER } from 'contants/constants';
 import { sendPost } from 'api/axios';
 import { AxiosError } from 'axios';
 
@@ -27,7 +25,6 @@ interface IBodyUpdateProfile {
 }
 
 export default function MyPageProfile() {
-  const { t } = useTranslation();
   const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
   const queryClient = useQueryClient();
   const isFetching = useIsFetching({
@@ -41,47 +38,50 @@ export default function MyPageProfile() {
   const [avatarURL, setAvatarURL] = useState<string>(AvatarDefault);
   const imageIdRef = useRef<number | undefined>(undefined);
 
-  const { mutate: postUpdateProfile } = useMutation(async (body: IBodyUpdateProfile) => {
-    return sendPost('rpc/tracnghiem/profile/update-limit', body);
-  }, {
-    onSuccess: (response: IDataResponseprofile) => {
-     message.success('Cập nhật thành công!');
-     setIsLoadingBtnSubmitProfile(false);
-     queryClient.refetchQueries([GET_CUSTOMER_PROFILE])
+  const { mutate: postUpdateProfile } = useMutation(
+    async (body: IBodyUpdateProfile) => {
+      return sendPost('rpc/tracnghiem/profile/update-limit', body);
     },
-    onError: (error) => {
-      const errorMessage = error as AxiosError;
-      if (errorMessage.response?.status === ERROR_RESPONSE) {
-        form.setFields([
-          {
-            name: 'displayName',
-            errors: errorMessage.response?.data?.errors?.displayName
-              ? [errorMessage.response?.data?.errors?.displayName]
-              : [],
-          },
-        ]);
-      } else {
-        handleErrorMessage(error);
-      }
-      setIsLoadingBtnSubmitProfile(false);
-    },
-  });
+    {
+      onSuccess: (response: IDataResponseprofile) => {
+        message.success('Cập nhật thành công!');
+        setIsLoadingBtnSubmitProfile(false);
+        queryClient.refetchQueries([GET_CUSTOMER_PROFILE]);
+      },
+      onError: (error) => {
+        const errorMessage = error as AxiosError;
+        if (errorMessage.response?.status === ERROR_RESPONSE) {
+          form.setFields([
+            {
+              name: 'displayName',
+              errors: errorMessage.response?.data?.errors?.displayName
+                ? [errorMessage.response?.data?.errors?.displayName]
+                : [],
+            },
+          ]);
+        } else {
+          handleErrorMessage(error);
+        }
+        setIsLoadingBtnSubmitProfile(false);
+      },
+    }
+  );
 
   const handleChangeAvatar = async (info: UploadChangeParam<any>) => {
-
     const formData = new FormData();
     formData.append('file', info?.file);
     setIsLoadingAvatar(true);
-    sendPost('rpc/tracnghiem/profile/save-image', formData).then((res) => {
-      setAvatarURL(res?.url);
-      imageIdRef.current = res?.id;
-      setIsLoadingAvatar(false);
-    })
-    .catch(err => {
-      setIsLoadingAvatar(false);
-      message.error(err?.response?.message);
-    })
-  }
+    sendPost('rpc/tracnghiem/profile/save-image', formData)
+      .then((res) => {
+        setAvatarURL(res?.url);
+        imageIdRef.current = res?.id;
+        setIsLoadingAvatar(false);
+      })
+      .catch((err) => {
+        setIsLoadingAvatar(false);
+        message.error(err?.response?.message);
+      });
+  };
 
   const handleDeleteAvatar = () => {
     setAvatarURL(AvatarDefault);
@@ -94,33 +94,27 @@ export default function MyPageProfile() {
     });
   };
 
-
   const handleSubmitForm = (payload: any) => {
     setIsLoadingBtnSubmitProfile(true);
 
     const displayName = form?.getFieldValue('displayName');
 
-    postUpdateProfile({displayName,imageId: imageIdRef.current })
-
+    postUpdateProfile({ displayName, imageId: imageIdRef.current });
   };
 
   useEffect(() => {
     if (isFetching) return;
-    const profileResponse: any = queryClient.getQueryData([
-      GET_CUSTOMER_PROFILE,
-      isAuthenticated,
-    ]);
+    const profileResponse: any = queryClient.getQueryData([GET_CUSTOMER_PROFILE, isAuthenticated]);
     setProfile(profileResponse);
   }, [isFetching, queryClient, isAuthenticated]);
 
   useEffect(() => {
     if (profile) {
-      form?.setFieldsValue({username: profile?.username, displayName: profile?.displayName, email: profile?.email});
+      form?.setFieldsValue({ username: profile?.username, displayName: profile?.displayName, email: profile?.email });
       setAvatarURL(profile?.image?.url || AvatarDefault);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
-
 
   return (
     <div className={styles.myPageProfile}>
@@ -179,56 +173,51 @@ export default function MyPageProfile() {
 
           <Col xs={24} sm={24} md={16} lg={16} xl={16} className={styles.colFormProfile}>
             <Row className={styles.rowName}>
-                <Col span={12}>
-                  <Form.Item
-                    labelCol={{ span: 24 }}
-                    className={styles.inputFormProfile}
-                    colon={false}
+              <Col span={12}>
+                <Form.Item
+                  labelCol={{ span: 24 }}
+                  className={styles.inputFormProfile}
+                  colon={false}
+                  name="displayName"
+                  label="Tên người dùng"
+                >
+                  <Input
+                    placeholder={'Nhập thông tin người dùng'}
+                    className={styles.inputProfile}
                     name="displayName"
-                    label="Tên người dùng"
-                  >
-                    <Input
-                      placeholder={'Nhập thông tin người dùng'}
-                      className={styles.inputProfile}
-                      name="displayName"
-                      onBlur={handleTrimSpaceInput}
-                    />
-                  </Form.Item>
-                </Col>
+                    onBlur={handleTrimSpaceInput}
+                  />
+                </Form.Item>
+              </Col>
 
-                <Col span={12}>
-                  <Form.Item
-                    labelCol={{ span: 24 }}
-                    className={styles.inputFormProfile}
-                    colon={false}
+              <Col span={12}>
+                <Form.Item
+                  labelCol={{ span: 24 }}
+                  className={styles.inputFormProfile}
+                  colon={false}
+                  name="username"
+                  label="Username"
+                >
+                  <Input
+                    disabled={true}
+                    className={styles.inputProfile}
                     name="username"
-                    label="Username"
-                  >
-                    <Input
-                      disabled={true}
-                      className={styles.inputProfile}
-                      name="username"
-                      onBlur={handleTrimSpaceInput}
-                    />
-                  </Form.Item>
-                </Col>
+                    onBlur={handleTrimSpaceInput}
+                  />
+                </Form.Item>
+              </Col>
 
-                <Col span={12}>
-                  <Form.Item
-                    labelCol={{ span: 24 }}
-                    className={styles.inputFormProfile}
-                    colon={false}
-                    name="email"
-                    label="Email"
-                  >
-                    <Input
-                      disabled={true}
-                      className={styles.inputProfile}
-                      name="email"
-                      onBlur={handleTrimSpaceInput}
-                    />
-                  </Form.Item>
-                </Col>
+              <Col span={12}>
+                <Form.Item
+                  labelCol={{ span: 24 }}
+                  className={styles.inputFormProfile}
+                  colon={false}
+                  name="email"
+                  label="Email"
+                >
+                  <Input disabled={true} className={styles.inputProfile} name="email" onBlur={handleTrimSpaceInput} />
+                </Form.Item>
+              </Col>
             </Row>
           </Col>
         </Row>

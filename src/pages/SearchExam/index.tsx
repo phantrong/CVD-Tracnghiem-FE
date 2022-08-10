@@ -8,14 +8,7 @@ import filterIcon from 'assets/images/filter.svg';
 import iconSearch from 'assets/images/SearchFilled.svg';
 import iconQuestion from 'assets/images/question.svg';
 import iconPeople from 'assets/images/people.svg';
-import { ESort, IBodyListExam, useGetCategory, useGetListExam } from 'hooks/home';
-import { useMutation } from 'react-query';
-import { sendPost } from 'api/axios';
-
-interface IBodySearchTest {
-  subjectId?: {equal: number};
-  search?: string;
-}
+import { ESort, useGetCategory, useGetCountPublicExam, useGetListExam } from 'hooks/home';
 
 const { Option } = Select;
 
@@ -28,35 +21,37 @@ export default function SearchExam() {
   const { t } = useTranslation();
   const { state }: any = useLocation();
   const navigate = useNavigate();
- 
-  
+
   const [keyWord, setKeyWord] = useState<string>(state?.keyWord);
   const [categorySelected, setCategorySelected] = useState<number>();
   const [sortBy, setSortBy] = useState<string>(SORT_BY.NEW);
   const [page, setPage] = useState<number>(1);
   const listCategory: CategoryInterface[] = useGetCategory();
 
-  const [bodyListExam, setBodyListExam] = useState<IBodyListExam>({take: 10, skip: 0, orderBy: 50, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC})
+  const [bodyListExam, setBodyListExam] = useState<any>({
+    take: 10,
+    skip: (page - 1) * 10,
+    orderBy: 50,
+    orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC,
+  });
 
-  const {data: listExams, isLoading} = useGetListExam(bodyListExam);
-
+  const { data: listExams, isLoading } = useGetListExam(bodyListExam);
+  const { data: countExam } = useGetCountPublicExam(bodyListExam);
 
   useEffect(() => {
-    if(!isLoading) {
+    if (!isLoading) {
       setIsloadSortBy(false);
     }
-  },[isLoading]);
+  }, [isLoading]);
 
   useEffect(() => {
-    if(listCategory) {
+    if (listCategory) {
       setCategorySelected(state?.categoryId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[listCategory])
-  // const { data: listCategory, isLoading: isLoadingCategory }: any = {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listCategory]);
 
   const [isLoadingSortBy, setIsloadSortBy] = useState<boolean>(false);
-
 
   const isLoadingExam = false;
 
@@ -68,7 +63,6 @@ export default function SearchExam() {
     setSortBy(value);
   };
 
-
   const handleChangePage = (value: number) => {
     setPage(value);
     setIsloadSortBy(true);
@@ -76,24 +70,24 @@ export default function SearchExam() {
 
   const listExamBox = useMemo(
     () =>
-    listExams?.map((exam: ExamInterface) => (
+      listExams?.map((exam: any) => (
         <div className={styles.boxExam}>
           <img src={exam?.image?.url} className={styles.imageExam} alt="Exam" />
           <div className={styles.infoExam}>
             <div className={styles.listCategory}>
               {/* {exam?.subjects?.map((category: CategoryInterface) => ( */}
-                <div className={styles.category}>{exam?.subject?.name}</div>
+              <div className={styles.category}>{exam?.subject?.name}</div>
               {/* // ))} */}
             </div>
             <div className={styles.nameExam}>{exam.name}</div>
             <div className={styles.countInfoExam}>
               <div className={styles.countInfo}>
                 <img src={iconQuestion} className={styles.imageExam} alt="countQuestion" />{' '}
-                {t('searchExam.countQuestion', { count: exam.totalQuestion })}
+                {t('searchExam.countQuestion', { count: exam?.totalQuestion })}
               </div>
               <div className={styles.countInfo}>
                 <img src={iconPeople} className={styles.imageExam} alt="countExam" />{' '}
-                {t('searchExam.countExam', { count: exam.totalNumberTest })}
+                {t('searchExam.countExam', { count: exam?.totalNumberTest })}
               </div>
               <Button
                 block
@@ -108,7 +102,7 @@ export default function SearchExam() {
           </div>
         </div>
       )),
-    [listExams, t]
+    [listExams, t, navigate]
   );
 
   const optionSelectCategory = useMemo(() => {
@@ -119,24 +113,31 @@ export default function SearchExam() {
     ));
   }, [categorySelected, listCategory]);
 
-  
-  const handleSearchTestByEnter = (e?: React.KeyboardEvent<HTMLInputElement>) =>  {
-    if(e?.keyCode === 13) {
-      setBodyListExam({...bodyListExam, subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord })
+  const handleSearchTestByEnter = (e?: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e?.keyCode === 13) {
+      setBodyListExam({
+        ...bodyListExam,
+        subjectId: categorySelected ? { equal: categorySelected } : undefined,
+        search: keyWord,
+      });
     }
   };
 
   const handleSearchByButton = () => {
-    setBodyListExam({...bodyListExam, subjectId: categorySelected ? {equal: categorySelected } : undefined, search: keyWord })
-  }
+    setBodyListExam({
+      ...bodyListExam,
+      subjectId: categorySelected ? { equal: categorySelected } : undefined,
+      search: keyWord,
+    });
+  };
 
   useEffect(() => {
-    setBodyListExam({...bodyListExam, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[sortBy]);
+    setBodyListExam({ ...bodyListExam, orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy]);
 
   useEffect(() => {
-    window.history.replaceState({}, document.title)
+    window.history.replaceState({}, document.title);
   }, []);
 
   return (
@@ -165,7 +166,7 @@ export default function SearchExam() {
               allowClear
             >
               {optionSelectCategory}
-            </Select> 
+            </Select>
             <Button block type="primary" onClick={handleSearchByButton} htmlType="button" className={styles.btnFind}>
               {t('common.find').toUpperCase()}
             </Button>
@@ -175,13 +176,7 @@ export default function SearchExam() {
         <Col className={styles.listExam} span={18}>
           <div className={styles.divListExam}>
             <div className={styles.showAndSort}>
-              <div className={styles.showText}>
-                {t('searchExam.showCountExam', {
-                  from: 1,
-                  to: 10,
-                  total: 100,
-                })}
-              </div>
+              <div className={styles.showText}>Tổng số lượng: {countExam}</div>
               <div className={styles.sortDiv}>
                 <div className={styles.sortText}>{t('searchExam.sortBy')}</div>
                 <Select
@@ -190,7 +185,7 @@ export default function SearchExam() {
                   bordered={false}
                   onChange={handleChangeSortBy}
                   loading={isLoadingSortBy}
-                  placeholder={t('searchExam.category')}
+                  placeholder={t('searchExam.sortBy')}
                 >
                   <Option key="sortByNew" value={SORT_BY.NEW} selected={SORT_BY.NEW === sortBy}>
                     {t('searchExam.newMost')}
@@ -204,7 +199,7 @@ export default function SearchExam() {
             {isLoadingExam && <Spin size="large" />}
             {!isLoadingExam && <div className={styles.listExam}>{listExamBox}</div>}
             <div className={styles.pagination}>
-              <Pagination onChange={handleChangePage} total={100} current={page} pageSize={10} />
+              <Pagination onChange={handleChangePage} total={countExam} current={page} pageSize={10} />
             </div>
           </div>
         </Col>

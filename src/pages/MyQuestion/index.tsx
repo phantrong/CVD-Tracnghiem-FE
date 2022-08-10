@@ -273,6 +273,7 @@ export default function MyQuestion() {
               className={styles.select}
               bordered={false}
               onChange={handleChangeStatus}
+              allowClear
             >
               <Option
                 value={QUESTION_STATUS.ACTIVE}
@@ -296,6 +297,7 @@ export default function MyQuestion() {
               onChange={handleChangeGroup}
               loading={isLoadingListGroup}
               placeholder={t('myQuestion.group')}
+              allowClear
             >
               {optionSelectGroup}
             </Select>
@@ -331,13 +333,7 @@ export default function MyQuestion() {
       {!isLoadingQuestion && (
         <Col span={24} className={styles.colPagination}>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className={styles.textPagination}>
-            <strong>
-              {t('myQuestion.showCount', {
-                total: countQuestions,
-                from: 1,
-                to: 10,
-              })}
-            </strong>
+            <strong>Tổng số lượng: {countQuestions}</strong>
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className={styles.pagination}>
             <Pagination

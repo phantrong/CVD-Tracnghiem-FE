@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { Menu, Dropdown, Button, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -31,11 +31,11 @@ export default function PageHeader() {
   const profile: any = useCustomerProfile(isAuthenticated);
   const [isModalLoginVisible, setIsModalLoginVisible] = useState<boolean>(false);
   const [isModalSignUpVisible, setIsModalSignUpVisible] = useState<boolean>(false);
-  const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);  
+  const [isModalForgotPasswordVisible, setIsModalForgotPasswordVisible] = useState<boolean>(false);
   const [visibleOtp, setVisibleOtp] = useState<boolean>(false);
 
   const [visibleReset, setVisibleReset] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');  
+  const [email, setEmail] = useState<string>('');
 
   const handleLogout = useCallback(() => {
     if (!isAuthenticated) return;
@@ -91,7 +91,7 @@ export default function PageHeader() {
   const handleShowResetPass = (value: boolean) => {
     setVisibleOtp(false);
     setVisibleReset(value);
-  }
+  };
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>
@@ -150,7 +150,13 @@ export default function PageHeader() {
             {!profile.isLoading && (
               <Dropdown overlay={menu} trigger={['click']}>
                 <div className={styles.dropdownToggle}>
-                  <img className={styles.icon} height={32} width={32} src={profile?.image?.url || avatarImg} alt="avatar user" />
+                  <img
+                    className={styles.icon}
+                    height={32}
+                    width={32}
+                    src={profile?.image?.url || avatarImg}
+                    alt="avatar user"
+                  />
                   <span className={styles.userName}>{profile?.displayName}</span>
                 </div>
               </Dropdown>
@@ -192,7 +198,11 @@ export default function PageHeader() {
         centered={true}
         footer={false}
       >
-        <ForgotPassword setEmail={setEmail} handleShowLogin={handleShowLogin} onSetVisible={{setVisibleOtp, setVisibleForGot: setIsModalForgotPasswordVisible}}/>
+        <ForgotPassword
+          setEmail={setEmail}
+          handleShowLogin={handleShowLogin}
+          onSetVisible={{ setVisibleOtp, setVisibleForGot: setIsModalForgotPasswordVisible }}
+        />
       </Modal>
 
       <Modal

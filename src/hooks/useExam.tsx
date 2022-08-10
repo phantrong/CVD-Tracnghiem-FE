@@ -1,4 +1,5 @@
 import {
+  getCountMyExam,
   getListAllQuestion,
   getListGradeExam,
   getListLevelExam,
@@ -12,6 +13,7 @@ import {
   getPublicExamDetail,
 } from 'api/exam';
 import {
+  GET_COUNT_LIST_EXAM,
   GET_LIST_ALL_QUESTION_EXAM,
   GET_LIST_GRADE_EXAM,
   GET_LIST_LEVEL_EXAM,
@@ -112,6 +114,14 @@ export const useGetPublicExamDetail = (params: any) => {
 export const useGetListMyExam = (params: any) => {
   const { data, isLoading } = useQuery([GET_MY_LIST_EXAM, params], async () => {
     const response = await getListMyExam(params);
+    return response;
+  });
+  return { data: data, isLoading };
+};
+
+export const useGetCountMyExam = (params: any) => {
+  const { data, isLoading } = useQuery([GET_COUNT_LIST_EXAM, params], async () => {
+    const response = await getCountMyExam(params);
     return response;
   });
   return { data: data, isLoading };

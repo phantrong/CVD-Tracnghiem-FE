@@ -8,24 +8,25 @@ import { useIsFetching, useMutation, useQueryClient } from 'react-query';
 import { changePassword } from 'api/profile';
 import SideNav from 'components/SideNav';
 import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
+import Cookies from 'js-cookie';
+import { TOKEN_CUSTOMER } from 'contants/constants';
 
 export default function ChangePassword() {
   const { t } = useTranslation();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
-
+  const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
   const queryClient = useQueryClient();
   const isFetching = useIsFetching({
     queryKey: GET_CUSTOMER_PROFILE,
   });
   const [profile, setProfile] = useState<any>();
-  
+
   const [form] = Form.useForm();
-  
+
   const { mutate: postChangePassword } = useMutation(
     (params: ChangePasswordParamsInterface) => changePassword(params),
     {
       onSuccess: (response: any) => {
-        console.log(response);
         form.resetFields();
         message.success('Thay đổi mật khẩu thành công!');
         setIsLoadingSubmit(false);
@@ -39,8 +40,8 @@ export default function ChangePassword() {
 
   const handleSubmit = (payload: any) => {
     setIsLoadingSubmit(true);
-    
-    const data: ChangePasswordParamsInterface = {
+
+    const data: any = {
       oldPassword: payload.oldPassword,
       newPassword: payload.newPassword,
       confirmPassword: payload.confirmPassword,
@@ -52,12 +53,9 @@ export default function ChangePassword() {
 
   useEffect(() => {
     if (isFetching) return;
-    const profileResponse: any = queryClient.getQueryData([
-      GET_CUSTOMER_PROFILE,
-      true,
-    ]);
+    const profileResponse: any = queryClient.getQueryData([GET_CUSTOMER_PROFILE, isAuthenticated]);
     setProfile(profileResponse);
-  }, [isFetching, queryClient, true]);
+  }, [isFetching, queryClient, isAuthenticated]);
 
   return (
     <div className={styles.changePassword}>
