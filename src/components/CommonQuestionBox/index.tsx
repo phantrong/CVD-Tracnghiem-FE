@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, Col, Input, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +16,8 @@ interface CommonQuestionBoxProps {
   handleRemoveQuestion?: (question: QuestionDetailInterface) => void;
   numberQuestion?: number;
   typeShow?: number;
+  examState?: any;
+  setExamState?: React.Dispatch<any>;
 }
 
 export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
@@ -26,7 +28,30 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
     handleRemoveQuestion,
     numberQuestion,
     typeShow = TYPE_SHOW_QUESTION_BOX.SEARCH,
+    setExamState,
   } = props;
+
+  const handleChangeCheckOptions = useCallback(
+    (indexOption: number, e: any) => {
+      if (setExamState) {
+        setExamState((prevState: any) => {
+          prevState?.examQuestionMappings?.forEach((questions: any, indexQuestion: number) => {
+            if (indexQuestion + 1 === numberQuestion) {
+              questions?.question?.questionContents?.forEach((option: any, index: number) => {
+                if (indexOption === index) {
+                  option.isRight = e?.target?.checked;
+                } else if (questions?.question?.questionTypeId === 1) {
+                  option.isRight = false;
+                }
+              });
+            }
+          });
+          return prevState;
+        });
+      }
+    },
+    [setExamState, numberQuestion]
+  );
 
   return (
     <Row justify="center" className={styles.mainBox}>
@@ -85,10 +110,11 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                 )}
                 {typeShow === TYPE_SHOW_QUESTION_BOX.EXAM && (
                   <Input
-                    // onChange={() => handleChangeCheckOptions(index)}
+                    onChange={(e) => handleChangeCheckOptions(indexOption, e)}
                     className={styles.radioBtn}
                     value={indexOption}
                     type="radio"
+                    checked={option.isRight}
                     name={`checkOption${numberQuestion}`}
                     id={`question${numberQuestion}-option${indexOption}`}
                   />
@@ -125,9 +151,10 @@ export default function CommonQuestionBox(props: CommonQuestionBoxProps) {
                 )}
                 {typeShow === TYPE_SHOW_QUESTION_BOX.EXAM && (
                   <Input
-                    // onChange={() => handleChangeCheckOptions(index)}
+                    onChange={(e) => handleChangeCheckOptions(indexOption, e)}
                     className={styles.radioBtn}
                     value={indexOption}
+                    checked={option.isRight}
                     type="checkbox"
                     name={`checkOption${numberQuestion}`}
                     id={`question${numberQuestion}-option${indexOption}`}
