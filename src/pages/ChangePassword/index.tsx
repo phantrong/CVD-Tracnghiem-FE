@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './style.module.scss';
-import { Input, Button, Form, Row, Col } from 'antd';
+import { Input, Button, Form, Row, Col, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { RuleObject } from 'antd/lib/form';
 import { handleErrorMessage } from 'helper';
@@ -27,6 +27,7 @@ export default function ChangePassword() {
       onSuccess: (response: any) => {
         console.log(response);
         form.resetFields();
+        message.success('Thay đổi mật khẩu thành công!');
         setIsLoadingSubmit(false);
       },
       onError: (error) => {

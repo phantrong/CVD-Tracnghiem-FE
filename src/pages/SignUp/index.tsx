@@ -115,7 +115,19 @@ export default function SignUp(props: SignUpProps) {
           className={styles.input}
         />
       </Form.Item>
-      <Form.Item label={t('modalSignUp.password')} name="password" className={styles.form} labelCol={{ span: 24 }}>
+      <Form.Item label={t('modalSignUp.password')} name="password" className={styles.form} labelCol={{ span: 24 }} rules={[
+          ({ getFieldValue }) => ({
+            validator(_: RuleObject, value: string) {
+              if (
+                value &&
+                (value.length > MAX_LENGTH_PASSWORD || value.length < MIN_LENGTH_PASSWORD)
+              ) {
+                return Promise.reject(new Error('Độ dài mật khẩu là từ 6 đến 24 ký tự!'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]}>
         <Input.Password
           name="password"
           onChange={(e) => removeErrorOnChange(e)}
@@ -154,7 +166,7 @@ export default function SignUp(props: SignUpProps) {
                 getFieldValue('password') === value &&
                 (value.length > MAX_LENGTH_PASSWORD || value.length < MIN_LENGTH_PASSWORD)
               ) {
-                return Promise.reject(new Error(t('signUp.form.validate.passwordLen')));
+                return Promise.reject(new Error('Độ dài mật khẩu là từ 6 đến 24 ký tự!'));
               }
               return Promise.resolve();
             },
