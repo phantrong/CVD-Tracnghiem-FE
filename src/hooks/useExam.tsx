@@ -2,11 +2,14 @@ import {
   getListAllQuestion,
   getListGradeExam,
   getListLevelExam,
+  getListMyExam,
   getListPublicExam,
   getListStatus,
   getListStatusExam,
   getListSubjectExam,
+  getMyExamDetail,
   getMyListExam,
+  getPublicExamDetail,
 } from 'api/exam';
 import {
   GET_LIST_ALL_QUESTION_EXAM,
@@ -16,7 +19,9 @@ import {
   GET_LIST_STATUS,
   GET_LIST_STATUS_EXAM,
   GET_LIST_SUBJECT_EXAM,
+  GET_MY_EXAM_DETAIL,
   GET_MY_LIST_EXAM,
+  GET_PUBLIC_EXAM_DETAIL,
 } from 'contants/keyQuery';
 import { useQuery } from 'react-query';
 
@@ -87,5 +92,41 @@ export const useGetMyListExam = (params: any) => {
     const response = await getMyListExam(params);
     return response;
   });
+  return { data: data, isLoading };
+};
+
+export const useGetPublicExamDetail = (params: any) => {
+  const { data, isLoading } = useQuery(
+    [GET_PUBLIC_EXAM_DETAIL, params],
+    async () => {
+      const response = await getPublicExamDetail(params);
+      return response;
+    },
+    {
+      enabled: !!params?.id,
+    }
+  );
+  return { data: data, isLoading };
+};
+
+export const useGetListMyExam = (params: any) => {
+  const { data, isLoading } = useQuery([GET_MY_LIST_EXAM, params], async () => {
+    const response = await getListMyExam(params);
+    return response;
+  });
+  return { data: data, isLoading };
+};
+
+export const useGetMyExamDetail = (params: any) => {
+  const { data, isLoading } = useQuery(
+    [GET_MY_EXAM_DETAIL, params],
+    async () => {
+      const response = await getMyExamDetail(params);
+      return response;
+    },
+    {
+      enabled: !!params?.id,
+    }
+  );
   return { data: data, isLoading };
 };

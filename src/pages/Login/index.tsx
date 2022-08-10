@@ -37,8 +37,6 @@ export default function Login(props: LoginProps) {
     },
     onError: (error) => {
       const errorMessage = error as AxiosError;
-      console.log(errorMessage.response?.status);
-
       if (errorMessage.response?.status === ERROR_RESPONSE) {
         form.setFields([
           {

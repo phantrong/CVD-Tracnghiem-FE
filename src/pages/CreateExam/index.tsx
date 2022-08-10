@@ -22,11 +22,13 @@ import {
   useGetListStatus,
   useGetListStatusExam,
   useGetListSubjectExam,
+  useGetPublicExamDetail,
 } from 'hooks/useExam';
 import { GET_CUSTOMER_PROFILE } from 'contants/keyQuery';
 import Cookies from 'js-cookie';
-import { createExam, uploadImageExam } from 'api/exam';
+import { createExam, updateExam, uploadImageExam } from 'api/exam';
 import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
 
 const { Option } = Select;
 
@@ -37,7 +39,17 @@ const defaultFilter: any = {
   keyWord: '',
 };
 
-export default function CreateExam() {
+const fomrDataDefault: any = {
+  name: '',
+  subjectId: undefined,
+  examLevelId: undefined,
+  statusId: undefined,
+  gradeId: undefined,
+  examStatusId: EXAM_STATUS.DRAFT,
+  time: '',
+};
+
+export default function CreateExam(props: any) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isAuthenticated = !!Cookies.get(TOKEN_CUSTOMER);
@@ -45,8 +57,10 @@ export default function CreateExam() {
   const isFetching = useIsFetching({
     queryKey: GET_CUSTOMER_PROFILE,
   });
+  const { myExamDetail } = props;
   const [form]: FormInstance<any>[] = Form.useForm();
   const [profile, setProfile] = useState<any>();
+  const [dataForm, setDataForm] = useState<any>(fomrDataDefault);
   const [filter, setFilter] = useState<any>(defaultFilter);
   const [isModalFindQuestion, setIsModalFindQuestion] = useState<boolean>(false);
   const [listQuestionSelected, setListQuestionSelected] = useState<any[]>([]);
@@ -55,8 +69,9 @@ export default function CreateExam() {
   const [isLoadingSubmit, setIsLoadingSubmit] = useState<boolean>(false);
   const [isMyQuestion, setIsMyQuestion] = useState<boolean>(false);
   const [isLoadingAvatar, setIsLoadingAvatar] = useState<boolean>(false);
-  const [examSelectedIndex, setExamSelectedIndex] = useState<number>(0);
+  const [examSelectedId, setExamSelectedId] = useState<number>(0);
   const [listQuestionForcus, setListQuestionFocus] = useState<any>([]);
+  const [examDetailEdit, setExamDetailEdit] = useState<any>(myExamDetail);
 
   const { mutate: uploadImage } = useMutation((params: any) => uploadImageExam(params), {
     onSuccess: (response: any) => {
@@ -107,7 +122,49 @@ export default function CreateExam() {
         if (errorMessage.response?.data?.errors?.image) {
           message.error('Vui lòng upload ảnh đề thi.');
         }
-        console.log(errorMessage);
+      } else {
+        handleErrorMessage(error);
+      }
+      setIsLoadingSubmit(false);
+    },
+  });
+
+  const { mutate: postUpdate } = useMutation((params: any) => updateExam(params), {
+    onSuccess: () => {
+      message.success('Sửa bài thi thành công.');
+      setIsLoadingSubmit(false);
+      navigate('/exam');
+    },
+    onError: (error) => {
+      const errorMessage = error as AxiosError;
+      if (errorMessage.response?.status === ERROR_RESPONSE) {
+        form.setFields([
+          {
+            name: 'examName',
+            errors: errorMessage.response?.data?.errors?.name ? [errorMessage.response?.data?.errors?.name] : [],
+          },
+          {
+            name: 'gradeId',
+            errors: errorMessage.response?.data?.errors?.grade ? [errorMessage.response?.data?.errors?.grade] : [],
+          },
+          {
+            name: 'subjectId',
+            errors: errorMessage.response?.data?.errors?.subject ? [errorMessage.response?.data?.errors?.subject] : [],
+          },
+          {
+            name: 'examLevelId',
+            errors: errorMessage.response?.data?.errors?.examLevel
+              ? [errorMessage.response?.data?.errors?.examLevel]
+              : [],
+          },
+          {
+            name: 'statusId',
+            errors: errorMessage.response?.data?.errors?.status ? [errorMessage.response?.data?.errors?.status] : [],
+          },
+        ]);
+        if (errorMessage.response?.data?.errors?.image) {
+          message.error('Vui lòng upload ảnh đề thi.');
+        }
       } else {
         handleErrorMessage(error);
       }
@@ -125,13 +182,18 @@ export default function CreateExam() {
     examLevelId: {
       equal: filter.level,
     },
-    search: filter.keyWord,
+    name: {
+      contain: filter.keyWord,
+    },
   });
   const { data: listSubject, isLoading: isLoadingSubject } = useGetListSubjectExam({});
   const { data: listGrade, isLoading: isLoadingGrade } = useGetListGradeExam({});
   const { data: listLevel, isLoading: isLoadingLevel } = useGetListLevelExam({});
   const { data: listStatusExam, isLoading: isLoadingStatusExam } = useGetListStatusExam({});
   const { data: listStatus, isLoading: isLoadingStatus } = useGetListStatus({});
+  const { data: publicExamDetail, isLoading: isLoadingPublicExamDetail } = useGetPublicExamDetail({
+    id: examSelectedId,
+  });
 
   const { data: listQuestion, isLoading: isLoadingQuestion } = useGetListAllQuestion(
     {
@@ -144,9 +206,6 @@ export default function CreateExam() {
     },
     isMyQuestion
   );
-
-  const isLoadingQuetionsSelected = false;
-  const questionsSelected: QuestionDetailInterface[] = [];
 
   const handleChangeAvatar = useCallback(
     (info: UploadChangeParam<any>) => {
@@ -172,7 +231,6 @@ export default function CreateExam() {
     (value: number) => {
       setFilter({
         ...filter,
-        page: 1,
         subject: value,
       });
     },
@@ -183,7 +241,6 @@ export default function CreateExam() {
     (value: number) => {
       setFilter({
         ...filter,
-        page: 1,
         grade: value,
       });
     },
@@ -194,7 +251,6 @@ export default function CreateExam() {
     (value: number) => {
       setFilter({
         ...filter,
-        page: 1,
         level: value,
       });
     },
@@ -205,7 +261,6 @@ export default function CreateExam() {
     (value: string) => {
       setFilter({
         ...filter,
-        page: 1,
         keyWord: value,
       });
     },
@@ -239,6 +294,7 @@ export default function CreateExam() {
 
   const handleChangeIsMyQuestion = (e: any) => {
     setIsMyQuestion(e.target.checked);
+    setExamSelectedId(0);
   };
 
   const handleSubmit = useCallback(
@@ -255,28 +311,45 @@ export default function CreateExam() {
         message.error('Vui lòng chọn ít nhât 1 câu hỏi');
         setIsLoadingSubmit(false);
       } else {
-        const data = {
-          id: 0,
+        let data: any = {
+          id: examDetailEdit ? examDetailEdit.id : 0,
           name: payload.examName,
           subjectId: payload.subjectId,
           examLevelId: payload.examLevelId,
           statusId: payload.statusId,
           creatorId: profile?.id,
           gradeId: payload.gradeId,
-          examStatusId: payload.statusExamId,
+          examStatusId: payload.examStatusId,
           imageId: imageId,
           time: payload.examTime,
           subject: listSubject?.find((subject: any) => subject.id === payload.subjectId),
           examLevel: listLevel?.find((examLevel: any) => examLevel.id === payload.examLevelId),
           status: listStatus?.find((status: any) => status.id === payload.statusId),
           grade: listGrade?.find((grade: any) => grade.id === payload.gradeId),
-          examStatus: listStatusExam?.find((examStatus: any) => examStatus.id === examStatus.statusExamId),
+          examStatus: listStatusExam?.find((examStatus: any) => examStatus.id === payload.examStatusId),
           examQuestionMappings: examQuestionMappings,
         };
-        postCreate(data);
+        if (examDetailEdit) {
+          data.code = examDetailEdit?.code;
+          postUpdate(data);
+        } else {
+          postCreate(data);
+        }
       }
     },
-    [imageId, profile, listQuestionSelected, listGrade, listSubject, listLevel, listStatus, listStatusExam, postCreate]
+    [
+      imageId,
+      profile,
+      listQuestionSelected,
+      listGrade,
+      listSubject,
+      listLevel,
+      listStatus,
+      listStatusExam,
+      postCreate,
+      examDetailEdit,
+      postUpdate,
+    ]
   );
 
   useEffect(() => {
@@ -286,14 +359,49 @@ export default function CreateExam() {
   }, [isFetching, queryClient, isAuthenticated]);
 
   useEffect(() => {
+    if (myExamDetail) {
+      setExamDetailEdit(myExamDetail);
+    }
+  }, [myExamDetail]);
+
+  useEffect(() => {
+    if (examDetailEdit) {
+      setDataForm({
+        examName: examDetailEdit?.name,
+        subjectId: examDetailEdit?.subjectId,
+        examLevelId: examDetailEdit?.examLevelId,
+        statusId: examDetailEdit?.statusId,
+        gradeId: examDetailEdit?.gradeId,
+        examStatusId: examDetailEdit?.examStatusId,
+        examTime: examDetailEdit?.time,
+      });
+      setAvatarURL(examDetailEdit?.image?.url);
+      setImageId(examDetailEdit?.image?.id);
+      const examQuestions = examDetailEdit?.examQuestionMappings?.map((questions: any) => {
+        return questions?.question;
+      });
+      setListQuestionSelected(examQuestions);
+    }
+  }, [examDetailEdit]);
+
+  useEffect(() => {
     if (isMyQuestion) {
       setListQuestionFocus(listQuestion);
-    } else if (listExam && typeof listExam[examSelectedIndex] != 'undefined') {
-      setListQuestionFocus(listExam[examSelectedIndex]?.questions || []);
+    } else if (examSelectedId && publicExamDetail) {
+      const examQuestions = publicExamDetail?.examQuestionMappings?.map((questions: any) => {
+        return questions?.question;
+      });
+      setListQuestionFocus(examQuestions || []);
     } else {
       setListQuestionFocus([]);
     }
-  }, [isMyQuestion, listQuestion, listExam, examSelectedIndex]);
+  }, [isMyQuestion, listQuestion, examSelectedId, publicExamDetail]);
+
+  useEffect(() => {
+    if (dataForm) {
+      form.resetFields();
+    }
+  }, [dataForm, form]);
 
   const optionSelectSubject = useMemo(() => {
     return listSubject?.map((subject: CategoryInterface) => (
@@ -336,13 +444,19 @@ export default function CreateExam() {
   }, [listStatusExam]);
 
   const listExamShow = useMemo(() => {
-    return listExam?.map((exam: FindExamInterface, index: number) => (
-      <div className={styles.boxExam} onClick={() => setExamSelectedIndex(index)}>
-        <img src={exam.image} alt="exam" />
+    return listExam?.map((exam: any) => (
+      <div
+        className={classNames({
+          [styles.boxExam]: true,
+          [styles.boxExamActive]: exam.id === examSelectedId,
+        })}
+        onClick={() => setExamSelectedId(exam.id)}
+      >
+        <img src={exam?.image?.url} alt="exam" />
         <div>{`${exam.name} (${exam.totalQuestion} câu hỏi)`}</div>
       </div>
     ));
-  }, [listExam]);
+  }, [listExam, examSelectedId]);
 
   const listQuestionShow = useMemo(() => {
     return listQuestionForcus?.map((question: QuestionDetailInterface) => (
@@ -356,16 +470,12 @@ export default function CreateExam() {
     ));
   }, [listQuestionSelected, handleRemoveQuestion]);
 
-  useEffect(() => {
-    setListQuestionSelected(questionsSelected);
-  }, []);
-
   return (
     <div className={styles.createExam}>
       <SideNav />
       <Row justify="space-between" align="bottom" className={styles.title}>
         <Col span={24}>
-          <h2>{t('createExam.title')}</h2>
+          <h2>{examDetailEdit ? 'Sửa để thi' : t('createExam.title')}</h2>
         </Col>
       </Row>
       <Row justify="space-between" className={styles.formExam}>
@@ -415,7 +525,7 @@ export default function CreateExam() {
               </Col>
             </Row>
           </Row>
-          <Form form={form} onFinish={handleSubmit} className={styles.examForm}>
+          <Form form={form} onFinish={handleSubmit} className={styles.examForm} initialValues={dataForm}>
             <Form.Item labelCol={{ span: 24 }} name="examName" label={t('createExam.examName')} className={styles.form}>
               <Input className={styles.input} placeholder={t('createExam.examName')} />
             </Form.Item>
@@ -427,13 +537,7 @@ export default function CreateExam() {
                 {optionSelectSubject}
               </Select>
             </Form.Item>
-            <Form.Item
-              labelCol={{ span: 24 }}
-              label={'Lớp'}
-              name="gradeId"
-              className={styles.form}
-              // initialValue={EXAM_STATUS.DRAFT}
-            >
+            <Form.Item labelCol={{ span: 24 }} label={'Lớp'} name="gradeId" className={styles.form}>
               <Select className={styles.select} bordered={false} loading={isLoadingGrade} placeholder={'Lớp'}>
                 {optionSelectGrade}
               </Select>
@@ -443,13 +547,7 @@ export default function CreateExam() {
                 {optionSelectLevel}
               </Select>
             </Form.Item>
-            <Form.Item
-              labelCol={{ span: 24 }}
-              label={'Trạng thái công bố'}
-              name="statusExamId"
-              className={styles.form}
-              initialValue={EXAM_STATUS.DRAFT}
-            >
+            <Form.Item labelCol={{ span: 24 }} label={'Trạng thái công bố'} name="examStatusId" className={styles.form}>
               <Select
                 placeholder={'Trạng thái công bố'}
                 className={styles.select}
@@ -475,7 +573,7 @@ export default function CreateExam() {
               </Select>
             </Form.Item>
             <Button block type="primary" htmlType="submit" className={styles.btnSubmit} loading={isLoadingSubmit}>
-              {t('createExam.create').toUpperCase()}
+              {examDetailEdit ? 'SỬA ĐỀ THI' : t('createExam.create').toUpperCase()}
             </Button>
           </Form>
         </Col>
@@ -541,14 +639,18 @@ export default function CreateExam() {
             </Col>
           </Col>
           <Col span={16} className={styles.showQuestion}>
-            {isLoadingQuestion && <Spin />}
-            {!isLoadingQuestion && listQuestionShow}
-            {!isLoadingQuestion && !listQuestionShow?.length && (
+            {(isLoadingQuestion || isLoadingPublicExamDetail) && <Spin />}
+            {!isLoadingQuestion && !isLoadingPublicExamDetail && listQuestionShow}
+            {!isLoadingQuestion && !isLoadingPublicExamDetail && !listQuestionShow?.length && (
               <div className={styles.message}>Chưa có dữ liệu câu hỏi.</div>
             )}
-            {!isLoadingQuestion && !listQuestionShow?.length && !examSelectedIndex && !isMyQuestion && (
-              <div className={styles.message}>Vui lòng chọn đề thi hoặc tích vào "Chỉ lấy các câu hỏi của bạn".</div>
-            )}
+            {!isLoadingQuestion &&
+              !isLoadingPublicExamDetail &&
+              !listQuestionShow?.length &&
+              !examSelectedId &&
+              !isMyQuestion && (
+                <div className={styles.message}>Vui lòng chọn đề thi hoặc tích vào "Chỉ lấy các câu hỏi của bạn".</div>
+              )}
           </Col>
         </Row>
       </Modal>

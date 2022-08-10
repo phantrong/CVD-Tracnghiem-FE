@@ -157,8 +157,6 @@ export default function CommonQuestionForm(props: CommonQuestionFormProps) {
     setCheckedOptions([]);
   };
 
-  console.log(checkedOptions);
-
   const handleChangeCheckOptions = useCallback(
     (index: number) => {
       if (typeOption === QUESTION_TYPE.PICK_ONE) {

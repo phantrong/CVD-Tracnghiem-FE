@@ -11,3 +11,8 @@ export const uploadImageExam = (params: any) => sendPost('/rpc/tracnghiem/exam/u
 export const getListAllQuestion = (params: any) => sendPost('/rpc/tracnghiem/exam/list-question', params);
 export const getMyListExam = (params: any) => sendPost('/rpc/tracnghiem/exam/list', params);
 export const createExam = (params: any) => sendPost('/rpc/tracnghiem/exam/create', params);
+export const getPublicExamDetail = (params: any) => sendPost('/rpc/tracnghiem/public-exam/get', params);
+export const getListMyExam = (params: any) => sendPost('/rpc/tracnghiem/exam/list', params);
+export const deleteMyExam = (params: any) => sendPost('/rpc/tracnghiem/exam/delete', params);
+export const getMyExamDetail = (params: any) => sendPost('/rpc/tracnghiem/exam/get', params);
+export const updateExam = (params: any) => sendPost('/rpc/tracnghiem/exam/update', params);

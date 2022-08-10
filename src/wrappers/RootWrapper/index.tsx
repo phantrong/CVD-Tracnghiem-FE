@@ -14,6 +14,7 @@ const CreateExam = lazy(() => import('pages/CreateExam'));
 const PreviewExam = lazy(() => import('pages/PreviewExam'));
 const ExamAction = lazy(() => import('pages/ExamAction'));
 const MyProfile = lazy(() => import('pages/MyProfile'));
+const EditExam = lazy(() => import('pages/EditExam'));
 
 export default function AppWrapper() {
   return (
@@ -31,6 +32,7 @@ export default function AppWrapper() {
             <Route path="/question" element={<MyQuestion />} />
             <Route path="/exam" element={<MyListExam />} />
             <Route path="/exam/create" element={<CreateExam />} />
+            <Route path="/exam/edit/:id" element={<EditExam />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/exam-action" element={<ExamAction />} />
           </Route>

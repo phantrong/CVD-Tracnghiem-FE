@@ -76,7 +76,10 @@
     "content": "Tên đề thi",
     "group": "Nhóm đề thi",
     "createdAt": "Ngày tạo",
-    "updatedAt": "Ngày cập nhật"
+    "updatedAt": "Ngày cập nhật",
+    "name": "Tên bài thi",
+    "subject": "Chủ đề",
+    "grade": "Lớp"
   },
   "createExam": {
     "title": "Tạo đề thi mới",
