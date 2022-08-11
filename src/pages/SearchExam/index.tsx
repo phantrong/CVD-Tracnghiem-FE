@@ -35,14 +35,14 @@ export default function SearchExam() {
     orderType: sortBy === SORT_BY.NEW ? ESort.DESC : ESort.ASC,
   });
 
-  const { data: listExams, isLoading } = useGetListExam(bodyListExam);
+  const { data: listExams, isLoading: isLoadingExams } = useGetListExam(bodyListExam);
   const { data: countExam } = useGetCountPublicExam(bodyListExam);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoadingExams) {
       setIsloadSortBy(false);
     }
-  }, [isLoading]);
+  }, [isLoadingExams]);
 
   useEffect(() => {
     if (listCategory) {
@@ -52,8 +52,6 @@ export default function SearchExam() {
   }, [listCategory]);
 
   const [isLoadingSortBy, setIsloadSortBy] = useState<boolean>(false);
-
-  const isLoadingExam = false;
 
   const handleChangeCategory = (value: number) => {
     setCategorySelected(value);
@@ -79,14 +77,14 @@ export default function SearchExam() {
               <div className={styles.category}>{exam?.subject?.name}</div>
               {/* // ))} */}
             </div>
-            <div className={styles.nameExam}>{exam.name}</div>
+            <div className={styles.nameExam}>{exam.name} - <span>{exam.code}</span></div>
             <div className={styles.countInfoExam}>
               <div className={styles.countInfo}>
-                <img src={iconQuestion} className={styles.imageExam} alt="countQuestion" />{' '}
+                <img src={iconQuestion} className={styles.icon} alt="countQuestion" />{' '}
                 {t('searchExam.countQuestion', { count: exam?.totalQuestion })}
               </div>
               <div className={styles.countInfo}>
-                <img src={iconPeople} className={styles.imageExam} alt="countExam" />{' '}
+                <img src={iconPeople} className={styles.icon} alt="countExam" />{' '}
                 {t('searchExam.countExam', { count: exam?.totalNumberTest })}
               </div>
               <Button
@@ -196,8 +194,8 @@ export default function SearchExam() {
                 </Select>
               </div>
             </div>
-            {isLoadingExam && <Spin size="large" />}
-            {!isLoadingExam && <div className={styles.listExam}>{listExamBox}</div>}
+            {isLoadingExams && <Spin size="large" />}
+            {!isLoadingExams && <div className={styles.listExam}>{listExamBox}</div>}
             <div className={styles.pagination}>
               <Pagination onChange={handleChangePage} total={countExam} current={page} pageSize={10} />
             </div>
